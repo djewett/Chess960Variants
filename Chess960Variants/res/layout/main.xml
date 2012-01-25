@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/rootlayout"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:gravity="center">
+
+    <FrameLayout 
+        android:id="@+id/darkCapturedPieces"
+    	android:layout_width="20dp"  
+    	android:layout_height="20dp"
+    	android:background="@color/brown"/>
+    
+    <LinearLayout
+        android:id="@+id/darkButtonLayout"
+        android:orientation="horizontal"
+        android:layout_width="20dp"  
+        android:layout_height="20dp"
+        android:background="@color/brown"
+        android:weightSum="4.0">
+        
+        <Button
+            android:id="@+id/dark_randomize"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="@string/randomize"
+            android:onClick="randomizeDarkPieces"
+            android:layout_weight="1.0"/>
+            
+        <Button
+            android:id="@+id/dark_reset"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="@string/reset"
+            android:onClick="resetDark"
+            android:layout_weight="1.0"/>
+            
+        <Button
+            android:id="@+id/dark_undo"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="@string/undo"
+            android:onClick="undoDark"
+            android:layout_weight="1.0"/>
+        
+        <Button
+            android:id="@+id/dark_restart"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="@string/restart"
+            android:onClick="restartDark"
+            android:layout_weight="1.0"/>
+            
+    </LinearLayout>  
+
+    <FrameLayout  
+    	android:id="@+id/centerFrame"
+    	android:layout_width="match_parent"  
+    	android:layout_height="match_parent"
+    	android:background="@drawable/wood_background_with_letters">
+            <GridView
+                android:id="@+id/boardGrid"
+                android:layout_width="match_parent" 
+                android:layout_height="match_parent"
+                android:numColumns="8"
+                android:verticalSpacing="0dp"
+                android:horizontalSpacing="0dp"
+                android:stretchMode="columnWidth"
+                android:background="@drawable/board"/>   
+	</FrameLayout>
+        
+    <LinearLayout
+        android:id="@+id/lightButtonLayout"
+        android:orientation="horizontal"
+    	android:layout_width="20dp"  
+    	android:layout_height="20dp"
+    	android:background="@color/brown"
+    	android:weightSum="4.0">
+    	
+    	<Button
+            android:id="@+id/light_randomize"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="@string/randomize"
+            android:onClick="randomizeLightPieces"
+            android:layout_weight="1.0"/>
+            
+        <Button
+            android:id="@+id/light_reset"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="@string/reset"
+            android:onClick="resetLight"
+            android:layout_weight="1.0"/>
+            
+        <Button
+            android:id="@+id/light_undo"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="@string/undo"
+            android:onClick="undoLight"
+            android:layout_weight="1.0"/>
+            
+        <Button
+            android:id="@+id/light_restart"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="@string/restart"
+            android:onClick="restartLight"
+            android:layout_weight="1.0"/>
+            
+    </LinearLayout> 
+    
+    <FrameLayout
+        android:id="@+id/lightCapturedPieces"
+        android:layout_width="20dp"  
+        android:layout_height="20dp"
+        android:background="@color/brown"/>
+        
+</LinearLayout>

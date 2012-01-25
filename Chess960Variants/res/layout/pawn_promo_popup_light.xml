@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/brown"
+    android:orientation="horizontal"
+    android:weightSum="1"
+    android:padding="5dp">
+    
+    <ImageButton
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:onClick="selectLightQueen"
+        android:background="@color/white"
+        android:src="@drawable/light_queen" 
+        android:scaleType="fitXY"
+        android:layout_weight="0.25"
+    />
+    
+    <ImageButton
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:onClick="selectLightRook"
+        android:background="@color/white"
+        android:src="@drawable/light_rook" 
+        android:scaleType="fitXY"
+        android:layout_weight="0.25"
+    />
+    
+    <ImageButton
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:onClick="selectLightBishop"
+        android:background="@color/white"
+        android:src="@drawable/light_bishop" 
+        android:scaleType="fitXY"
+        android:layout_weight="0.25"
+    />
+    
+    <ImageButton
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:onClick="selectLightKnight"
+        android:background="@color/white"
+        android:src="@drawable/light_knight" 
+        android:scaleType="fitXY"
+        android:layout_weight="0.25"
+    />
+    
+</LinearLayout>

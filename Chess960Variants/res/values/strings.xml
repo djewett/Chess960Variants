@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chess with Chess960 and Variants</string>
+    <string name="restart">Restart</string>
+    <string name="randomize">Random</string>
+    <string name="reset">Reset</string>
+    <string name="undo">Undo</string>
+</resources>

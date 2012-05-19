@@ -32,24 +32,26 @@ public final class R {
         public static final int dark_queen_dp=0x7f02000c;
         public static final int dark_rook=0x7f02000d;
         public static final int dark_rook_dp=0x7f02000e;
-        public static final int ic_launcher=0x7f02000f;
-        public static final int light_bishop=0x7f020010;
-        public static final int light_bishop_dp=0x7f020011;
-        public static final int light_king=0x7f020012;
-        public static final int light_king_dp=0x7f020013;
-        public static final int light_knight=0x7f020014;
-        public static final int light_knight_dp=0x7f020015;
-        public static final int light_pawn=0x7f020016;
-        public static final int light_pawn_dp=0x7f020017;
-        public static final int light_queen=0x7f020018;
-        public static final int light_queen_dp=0x7f020019;
-        public static final int light_rook=0x7f02001a;
-        public static final int light_rook_dp=0x7f02001b;
-        public static final int sound_disabled=0x7f02001c;
-        public static final int sound_enabled=0x7f02001d;
-        public static final int square_border=0x7f02001e;
-        public static final int title_page_logo=0x7f02001f;
-        public static final int wood_background_with_letters=0x7f020020;
+        public static final int expand_disabled=0x7f02000f;
+        public static final int expand_enabled=0x7f020010;
+        public static final int ic_launcher=0x7f020011;
+        public static final int light_bishop=0x7f020012;
+        public static final int light_bishop_dp=0x7f020013;
+        public static final int light_king=0x7f020014;
+        public static final int light_king_dp=0x7f020015;
+        public static final int light_knight=0x7f020016;
+        public static final int light_knight_dp=0x7f020017;
+        public static final int light_pawn=0x7f020018;
+        public static final int light_pawn_dp=0x7f020019;
+        public static final int light_queen=0x7f02001a;
+        public static final int light_queen_dp=0x7f02001b;
+        public static final int light_rook=0x7f02001c;
+        public static final int light_rook_dp=0x7f02001d;
+        public static final int sound_disabled=0x7f02001e;
+        public static final int sound_enabled=0x7f02001f;
+        public static final int square_border=0x7f020020;
+        public static final int title_page_logo=0x7f020021;
+        public static final int wood_background_with_letters=0x7f020022;
     }
     public static final class id {
         public static final int autoRotateToggleButton=0x7f070014;
@@ -64,9 +66,10 @@ public final class R {
         public static final int dark_restart=0x7f070006;
         public static final int dark_undo=0x7f070005;
         public static final int dialogLayout=0x7f07000f;
+        public static final int expandButton=0x7f070015;
         public static final int lightButtonLayout=0x7f070009;
-        public static final int lightButtonRow1=0x7f070015;
-        public static final int lightButtonRow2=0x7f070016;
+        public static final int lightButtonRow1=0x7f070016;
+        public static final int lightButtonRow2=0x7f070017;
         public static final int lightCapturedPieces=0x7f07000e;
         public static final int light_randomize=0x7f07000a;
         public static final int light_reset=0x7f07000b;
@@ -75,8 +78,8 @@ public final class R {
         public static final int rootlayout=0x7f070000;
         public static final int settingsLayout=0x7f070012;
         public static final int soundToggleButton=0x7f070013;
-        public static final int titleImage=0x7f070018;
-        public static final int titleRootLayout=0x7f070017;
+        public static final int titleImage=0x7f070019;
+        public static final int titleRootLayout=0x7f070018;
     }
     public static final class layout {
         public static final int main=0x7f030000;

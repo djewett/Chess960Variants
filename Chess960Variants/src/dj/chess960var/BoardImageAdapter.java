@@ -17,6 +17,7 @@ public class BoardImageAdapter extends BaseAdapter
 	private int mBoardWidthWithBorder_inPixels;
 	
 	private boolean mIsAutoRotateEnabled;
+	private boolean mIsBoardExpanded;
 	// TODO: Find a better way to accomplish this functionality (needing this
 	// extra boolean and long boolean name makes things a little harry):
 	private boolean mWasRotateDisabledDuringLightsTurn;
@@ -27,17 +28,19 @@ public class BoardImageAdapter extends BaseAdapter
         mGameModel = new GameModel();
         mBoardWidthWithBorder_inPixels = 0;
         mIsAutoRotateEnabled = true;
+        mIsBoardExpanded = false;
         mWasRotateDisabledDuringLightsTurn = false; // Irrelevant right now
     }
     
     public BoardImageAdapter( Context c, GameModel g, boolean autoRotEnabled, 
-    						  boolean disabledDuringWhitesTurn)
+    						  boolean expand, boolean disabledDuringWhitesTurn)
     {
     	// CTOR used for restoring an existing game:
         mContext = c;
         mGameModel = g;
         mBoardWidthWithBorder_inPixels = 0;
         mIsAutoRotateEnabled = autoRotEnabled;
+        mIsBoardExpanded = expand;
         mWasRotateDisabledDuringLightsTurn = disabledDuringWhitesTurn;
     }
 
@@ -141,6 +144,16 @@ public class BoardImageAdapter extends BaseAdapter
 	public boolean getRotateDisabledDuringLightsTurn()
 	{
 		return mWasRotateDisabledDuringLightsTurn;
+	}
+	
+	public void setIsExpanded(boolean expanded)
+	{
+		mIsBoardExpanded = expanded;
+	}
+	
+	public boolean getIsExpanded()
+	{
+		return mIsBoardExpanded;
 	}
 	
   // Call through methods:
@@ -259,14 +272,14 @@ public class BoardImageAdapter extends BaseAdapter
 	
 	private int squareWidth()
 	{
-		int[] paddingAndBoardWidth = 
-				Utilities.findPaddingValuesAndWidthOfBoard(
-					mBoardWidthWithBorder_inPixels);
+		int[] paddingAndBoardWidth = Utilities.findPaddingValuesAndWidthOfBoard(
+										 mBoardWidthWithBorder_inPixels,
+										 mIsBoardExpanded );
 	        
 	    int strictBoardWidth = paddingAndBoardWidth[4];
 	        
 	    if( 0 != strictBoardWidth % 8 )
-				throw new AssertionError("Board width not divisible by 8");
+			throw new AssertionError("Board width not divisible by 8");
 	        
 	    int squareWidth = strictBoardWidth / 8;
 	    

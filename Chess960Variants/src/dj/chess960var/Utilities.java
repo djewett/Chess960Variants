@@ -31,7 +31,8 @@ public class Utilities {
     }
     
 	public static int[] findPaddingValuesAndWidthOfBoard(
-		int totalAvailableWidth)
+		int totalAvailableWidth,
+		boolean isBoardExpanded )
 	{
 		// Here we are given a totalAvailableWidth, from which we want to 
 		// calculate and return (1) left, (2) top, (3) right and (4) bottom 
@@ -39,38 +40,62 @@ public class Utilities {
 		// width itself, such that the board width is divisible by 8 and as 
 		// close as possible to 40/43 of totalAvailableWidth, and such that the 
 		// padding values are all roughly equal:
-	
-		// Initially proposed width of board (don't worry about truncation):
-		int b = totalAvailableWidth * 93/100;
-	
-		// Make it divisible by 8:
-		b = b - (b % 8);
-	
-		// Total remaining space width-wise (or height-wise):
-		int x = totalAvailableWidth - b;
-		
-		int a = x/2;
-		
-		int c = x/2 + x%2;
-		
-		if( a + b + c != totalAvailableWidth )
-			throw new AssertionError("Padding values could not be constructed");
-		
-		//  ________________________
-		// |            |           |
-		// |            a           |
-		// |      ______|_____      |
-		// |     |      ^     |     |	
-		// |     |      |     |     |
-		// |<-a->|<-----b---->|<-c->|
-		// |     |      |     |     |
-		// |     |______v_____|     |
-		// |            |           |
-		// |            c           |
-		// |____________|___________|
 		
 		// {left, top, right, bottom, (strict) board width}:
-		int[] returnValues = {a, a, c, c, b};
+		int[] returnValues = new int[5];
+		
+		if( isBoardExpanded )
+		{
+			// No padding:
+			returnValues[0] = 0;
+			returnValues[1] = 0;
+			returnValues[2] = 0;
+			returnValues[3] = 0;
+			
+			// Board width is total available width:
+			returnValues[4] = totalAvailableWidth;
+			
+			// Ensure it is divisible by 8:
+			returnValues[4] = returnValues[4] - (returnValues[4] % 8);
+		}
+		else
+		{
+			// Initially proposed width of board (don't worry about truncation):
+			int b = totalAvailableWidth * 93/100;
+		
+			// Make it divisible by 8:
+			b = b - (b % 8);
+		
+			// Total remaining space width-wise (or height-wise):
+			int x = totalAvailableWidth - b;
+			
+			int a = x/2;
+			
+			int c = x/2 + x%2;
+			
+			if( a + b + c != totalAvailableWidth )
+				throw new AssertionError("Padding values could not be constructed");
+			
+			//  ________________________
+			// |            |           |
+			// |            a           |
+			// |      ______|_____      |
+			// |     |      ^     |     |	
+			// |     |      |     |     |
+			// |<-a->|<-----b---->|<-c->|
+			// |     |      |     |     |
+			// |     |______v_____|     |
+			// |            |           |
+			// |            c           |
+			// |____________|___________|
+			
+			// {left, top, right, bottom, (strict) board width}:
+			returnValues[0] = a;
+			returnValues[1] = a;
+			returnValues[2] = c;
+			returnValues[3] = c;
+			returnValues[4] = b;
+		}
 		
 		return returnValues;
 	}

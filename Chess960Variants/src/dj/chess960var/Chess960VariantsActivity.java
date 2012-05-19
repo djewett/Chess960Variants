@@ -91,10 +91,14 @@ public class Chess960VariantsActivity extends Activity
 				savedInstanceState.getBoolean(
 					"rotate disabled during lights turn");
 			
+			boolean expandEnabled = 
+				savedInstanceState.getBoolean("is expand enabled");
+			
 			BoardImageAdapter newAdap = 
 				new BoardImageAdapter( this,
 									   mGameModelForRestore,
 									   autoRotateEnabled,
+									   expandEnabled,
 									   rotateDisabledDuringLightsTurn );
 			
 			gv1.setAdapter( newAdap );
@@ -123,6 +127,10 @@ public class Chess960VariantsActivity extends Activity
 			getBoardImageAdapter().getRotateDisabledDuringLightsTurn();
 		outState.putBoolean("rotate disabled during lights turn", 
 							rotateDisabledDuringLightsTurn);
+		
+		boolean isExpandEnabled = 
+			getBoardImageAdapter().getIsExpanded();
+		outState.putBoolean("is expand enabled", isExpandEnabled);
 		
         // Save the modeled game for restoring it (ie. after screen has been
         // rotated, for example):
@@ -318,6 +326,28 @@ public class Chess960VariantsActivity extends Activity
 				R.drawable.auto_rotate_disabled);
 	}
 	
+	public void toggleBoardExpand(View view)
+	{
+		// * Note: view passed in is a reference to the widget that was clicked
+		
+		// Negate current value:
+		boolean isExpanded = !getBoardImageAdapter().getIsExpanded();
+		
+		getBoardImageAdapter().setIsExpanded(isExpanded);
+		
+		ImageButton expandButtonToggleButton = 
+				(ImageButton) findViewById(R.id.expandButton);
+		
+		if(isExpanded)
+			expandButtonToggleButton.setImageResource(
+				R.drawable.expand_enabled);
+		else
+			expandButtonToggleButton.setImageResource(
+				R.drawable.expand_disabled);
+		
+		this.redrawScreen();
+	}
+	
 	public void selectLightQueen(View view)
 	{
         selectPiece(GameModel.pc.lQ);
@@ -480,7 +510,7 @@ public class Chess960VariantsActivity extends Activity
 			sideFrame_height = (largerDimension - newBoardWidth_withBorder)/4;
 			sideFrame_width = newBoardWidth_withBorder;
 
-			textSize = sideFrame_width/34;
+			textSize = sideFrame_width/37; //sideFrame_width/34;
 			
 			FrameLayout dcp = 
 				(FrameLayout) findViewById(R.id.darkCapturedPieces);
@@ -524,7 +554,7 @@ public class Chess960VariantsActivity extends Activity
 			
 			sideFrame_height = newBoardWidth_withBorder;
 			
-			textSize = sideFrame_width/18;
+			textSize = sideFrame_width/20; //sideFrame_width/18;
 			
 			LinearLayout dialogLayout = 
 				(LinearLayout) findViewById(R.id.dialogLayout);
@@ -555,6 +585,15 @@ public class Chess960VariantsActivity extends Activity
 					(ImageButton) findViewById(R.id.autoRotateToggleButton);
 				autoRotateToggleButton.setImageResource(
 					R.drawable.auto_rotate_disabled);
+			}
+			
+			// Expand is DISABLED by default:
+			if( getBoardImageAdapter().getIsExpanded() )
+			{
+				ImageButton expandToggleButton = 
+					(ImageButton) findViewById(R.id.expandButton);
+				expandToggleButton.setImageResource(
+					R.drawable.expand_enabled);
 			}
 		}
 		else
@@ -623,11 +662,12 @@ public class Chess960VariantsActivity extends Activity
 		
 		int[] paddingAndBoardWidth = 
 			Utilities.findPaddingValuesAndWidthOfBoard(
-				newBoardWidth_withBorder);
-		
+				newBoardWidth_withBorder,
+				getBoardImageAdapter().getIsExpanded() );
+				
 		cFrame.setPadding(paddingAndBoardWidth[0],paddingAndBoardWidth[1],
-				          paddingAndBoardWidth[2],paddingAndBoardWidth[3]);
-		
+						  paddingAndBoardWidth[2],paddingAndBoardWidth[3]);
+				
 		cFrame.setClipToPadding(true);
 		
 		BoardImageAdapter boardImageAdap = getBoardImageAdapter(); 

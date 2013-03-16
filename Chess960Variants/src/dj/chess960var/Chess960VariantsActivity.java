@@ -297,7 +297,7 @@ public class Chess960VariantsActivity extends Activity
 		mIsSoundEnabled = !mIsSoundEnabled;
 		
 		ImageButton soundToggleButton = 
-				(ImageButton) findViewById(R.id.soundToggleButton);
+			(ImageButton) findViewById(R.id.soundToggleButton);
 		
 		if(mIsSoundEnabled)
 			soundToggleButton.setImageResource(R.drawable.sound_enabled);
@@ -316,7 +316,7 @@ public class Chess960VariantsActivity extends Activity
 		getBoardImageAdapter().setIsAutoRotateEnabled(isAutoRotateEnabled);
 		
 		ImageButton autoRotateToggleButton = 
-				(ImageButton) findViewById(R.id.autoRotateToggleButton);
+			(ImageButton) findViewById(R.id.autoRotateToggleButton);
 		
 		if(isAutoRotateEnabled)
 			autoRotateToggleButton.setImageResource(
@@ -336,7 +336,7 @@ public class Chess960VariantsActivity extends Activity
 		getBoardImageAdapter().setIsExpanded(isExpanded);
 		
 		ImageButton expandButtonToggleButton = 
-				(ImageButton) findViewById(R.id.expandButton);
+			(ImageButton) findViewById(R.id.expandButton);
 		
 		if(isExpanded)
 			expandButtonToggleButton.setImageResource(
@@ -346,6 +346,130 @@ public class Chess960VariantsActivity extends Activity
 				R.drawable.expand_disabled);
 		
 		this.redrawScreen();
+	}
+	
+	public void toggleLightAI1(View view)
+	{
+		// * Note: view passed in is a reference to the widget that was clicked
+		
+		ImageButton lightAI1ToggleButton = 
+			(ImageButton) findViewById(R.id.lightAI1ToggleButton);
+		
+		if( getBoardImageAdapter().getLightAI1() )
+		{
+			lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_disabled);
+			getBoardImageAdapter().setLightAI1(false);
+		}
+		else if( !getBoardImageAdapter().getLightAI2() )
+		{
+			lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_enabled);
+			getBoardImageAdapter().setLightAI1(true);
+		}
+		else
+		{
+			// In this case, we need to shut off AI 2 before enabling AI1:
+			
+			ImageButton lightAI2ToggleButton = 
+				(ImageButton) findViewById(R.id.lightAI2ToggleButton);
+			lightAI2ToggleButton.setImageResource(R.drawable.light_ai2_disabled);
+			getBoardImageAdapter().setLightAI2(false);
+			
+			lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_enabled);
+			getBoardImageAdapter().setLightAI1(true);
+		}
+	}
+	
+	public void toggleLightAI2(View view)
+	{
+		// * Note: view passed in is a reference to the widget that was clicked
+		
+		ImageButton lightAI2ToggleButton = 
+			(ImageButton) findViewById(R.id.lightAI2ToggleButton);
+		
+		if( getBoardImageAdapter().getLightAI2() )
+		{
+			lightAI2ToggleButton.setImageResource(R.drawable.light_ai2_disabled);
+			getBoardImageAdapter().setLightAI2(false);
+		}
+		else if( !getBoardImageAdapter().getLightAI1() )
+		{
+			lightAI2ToggleButton.setImageResource(R.drawable.light_ai2_enabled);
+			getBoardImageAdapter().setLightAI2(true);
+		}
+		else
+		{
+			// In this case, we need to shut off AI 1 before enabling AI1:
+			
+			ImageButton lightAI1ToggleButton = 
+				(ImageButton) findViewById(R.id.lightAI1ToggleButton);
+			lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_disabled);
+			getBoardImageAdapter().setLightAI1(false);
+			
+			lightAI2ToggleButton.setImageResource(R.drawable.light_ai2_enabled);
+			getBoardImageAdapter().setLightAI2(true);
+		}
+	}
+	
+	public void toggleDarkAI1(View view)
+	{
+		// * Note: view passed in is a reference to the widget that was clicked
+		
+		ImageButton darkAI1ToggleButton = 
+			(ImageButton) findViewById(R.id.darkAI1ToggleButton);
+		
+		if( getBoardImageAdapter().getDarkAI1() )
+		{
+			darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_disabled);
+			getBoardImageAdapter().setDarkAI1(false);
+		}
+		else if( !getBoardImageAdapter().getDarkAI2() )
+		{
+			darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_enabled);
+			getBoardImageAdapter().setDarkAI1(true);
+		}
+		else
+		{
+			// In this case, we need to shut off AI 2 before enabling AI1:
+			
+			ImageButton darkAI2ToggleButton = 
+				(ImageButton) findViewById(R.id.darkAI2ToggleButton);
+			darkAI2ToggleButton.setImageResource(R.drawable.dark_ai2_disabled);
+			getBoardImageAdapter().setDarkAI2(false);
+			
+			darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_enabled);
+			getBoardImageAdapter().setDarkAI1(true);
+		}
+	}
+	
+	public void toggleDarkAI2(View view)
+	{
+		// * Note: view passed in is a reference to the widget that was clicked
+		
+		ImageButton darkAI2ToggleButton = 
+			(ImageButton) findViewById(R.id.darkAI2ToggleButton);
+		
+		if( getBoardImageAdapter().getDarkAI2() )
+		{
+			darkAI2ToggleButton.setImageResource(R.drawable.dark_ai2_disabled);
+			getBoardImageAdapter().setDarkAI2(false);
+		}
+		else if( !getBoardImageAdapter().getDarkAI1() )
+		{
+			darkAI2ToggleButton.setImageResource(R.drawable.dark_ai2_enabled);
+			getBoardImageAdapter().setDarkAI2(true);
+		}
+		else
+		{
+			// In this case, we need to shut off AI 1 before enabling AI1:
+			
+			ImageButton darkAI1ToggleButton = 
+				(ImageButton) findViewById(R.id.darkAI1ToggleButton);
+			darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_disabled);
+			getBoardImageAdapter().setDarkAI1(false);
+			
+			darkAI2ToggleButton.setImageResource(R.drawable.dark_ai2_enabled);
+			getBoardImageAdapter().setDarkAI2(true);
+		}
 	}
 	
 	public void selectLightQueen(View view)

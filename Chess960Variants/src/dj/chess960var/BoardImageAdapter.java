@@ -253,6 +253,46 @@ public class BoardImageAdapter extends BaseAdapter
 		return returnVal;
 	}
 	
+	public void setLightAI1(boolean enabled)
+	{
+		mGameModel.setLightAI1(enabled);
+	}
+	
+	public boolean getLightAI1()
+	{
+		return mGameModel.getLightAI1();
+	}
+	
+	public void setLightAI2(boolean enabled)
+	{
+		mGameModel.setLightAI2(enabled);
+	}
+	
+	public boolean getLightAI2()
+	{
+		return mGameModel.getLightAI2();
+	}
+	
+	public void setDarkAI1(boolean enabled)
+	{
+		mGameModel.setDarkAI1(enabled);
+	}
+	
+	public boolean getDarkAI1()
+	{
+		return mGameModel.getDarkAI1();
+	}
+	
+	public void setDarkAI2(boolean enabled)
+	{
+		mGameModel.setDarkAI2(enabled);
+	}
+	
+	public boolean getDarkAI2()
+	{
+		return mGameModel.getDarkAI2();
+	}
+	
   // Private methods:
 	
 	private int initialBoardWidth()

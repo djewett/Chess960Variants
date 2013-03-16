@@ -7,6 +7,13 @@ public class GameModel
     private pc[][] mGameRep;
 	private boolean mIsLightsTurn;
 	
+	// Boolean variables to keep track of which AI is being used for which side,
+	// if any:
+	private boolean mIsLightAI1;
+	private boolean mIsLightAI2;
+	private boolean mIsDarkAI1;
+	private boolean mIsDarkAI2;
+	
 	// Need two randomizers so that we can assign the same seeds to each so that
 	// dark's setup will mirror light's:
 	private long mSeed;
@@ -68,6 +75,11 @@ public class GameModel
         mGameRep = initSetup;
         mIsLightsTurn = true;
         
+    	mIsLightAI1 = false;
+    	mIsLightAI2 = false;
+    	mIsDarkAI1 = false;
+    	mIsDarkAI2 = false;
+        
     	// Create seed so that the randomizations for Light and Dark Pieces
     	// will always be the same, as long as they're each pressed "Randomize"
     	// the same number of times, and so that the starting randomization is
@@ -109,6 +121,10 @@ public class GameModel
         
 		// Primitive type member variables:
         mIsLightsTurn = gM.mIsLightsTurn;
+    	mIsLightAI1 = gM.mIsLightAI1; // TODO: What else needs to be done for these four variables (ie. for minimizing and then reselecting chess960 app)?
+    	mIsLightAI2 = gM.mIsLightAI2;
+    	mIsDarkAI1 = gM.mIsDarkAI1;
+    	mIsDarkAI2 = gM.mIsDarkAI2;
     	mSeed = gM.mSeed;
     	mRandomizer_lightPieces = gM.mRandomizer_lightPieces;
     	mRandomizer_darkPieces = gM.mRandomizer_darkPieces;
@@ -448,6 +464,46 @@ public class GameModel
 		boolean isSquareEmpty = mGameRep[row][col] == pc.eS;
 		
 		return isSquareEmpty;
+	}
+	
+	public void setLightAI1(boolean enabled)
+	{
+		mIsLightAI1 = enabled;
+	}
+	
+	public boolean getLightAI1()
+	{
+		return mIsLightAI1;
+	}
+	
+	public void setLightAI2(boolean enabled)
+	{
+		mIsLightAI2 = enabled;
+	}
+	
+	public boolean getLightAI2()
+	{
+		return mIsLightAI2;
+	}
+	
+	public void setDarkAI1(boolean enabled)
+	{
+		mIsDarkAI1 = enabled;
+	}
+	
+	public boolean getDarkAI1()
+	{
+		return mIsDarkAI1;
+	}
+	
+	public void setDarkAI2(boolean enabled)
+	{
+		mIsDarkAI2 = enabled;
+	}
+	
+	public boolean getDarkAI2()
+	{
+		return mIsDarkAI2;
 	}
 	
 	private boolean areOpposingPieces(int row1,int col1,int row2,int col2)

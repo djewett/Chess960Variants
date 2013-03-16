@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"  
         android:layout_height="match_parent"
         android:background="@color/brown"
-        android:weightSum="7.0">
+        android:weightSum="9.0">
         
         <LinearLayout
             android:id="@+id/darkButtonRow2"
@@ -59,6 +59,53 @@
                 android:layout_width="0dp"
                 android:text="@string/randomize"
                 android:onClick="randomizeDarkPieces"
+                android:layout_weight="1.0"/>
+        </LinearLayout> 
+        
+        <LinearLayout
+            android:id="@+id/darkAILayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"  
+            android:layout_height="0dp"
+            android:background="@color/brown"
+            android:layout_weight="1.0"
+            android:weightSum="5.0">
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
+                android:layout_weight="1.0"/>
+            <ImageButton
+                android:id="@+id/darkAI1ToggleButton"
+                android:pivotX="50%" 
+				android:pivotY="50%" 
+				android:fromDegrees="0"
+				android:toDegrees="180" 
+                android:scaleType="centerInside"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/dark_ai1_disabled"
+                android:background="@null"
+                android:onClick="toggleDarkAI1"
+                android:layout_weight="1.0"/>
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
+                android:layout_weight="1.0"/>
+            <ImageButton
+                android:id="@+id/darkAI2ToggleButton"
+                android:scaleType="centerInside"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/dark_ai2_disabled"
+                android:background="@null"
+                android:onClick="toggleDarkAI2"
+                android:layout_weight="1.0"/>
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
                 android:layout_weight="1.0"/>
         </LinearLayout> 
             
@@ -134,6 +181,49 @@
             android:gravity="bottom"
             android:background="@color/brown"
             android:layout_weight="1.0"/>
+       
+       <LinearLayout
+            android:id="@+id/lightAILayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"  
+            android:layout_height="0dp"
+            android:background="@color/brown"
+            android:layout_weight="1.0"
+            android:weightSum="5.0">
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
+                android:layout_weight="1.0"/>
+            <ImageButton
+                android:id="@+id/lightAI1ToggleButton"
+                android:scaleType="centerInside"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/light_ai1_disabled"
+                android:background="@null"
+                android:onClick="toggleLightAI1"
+                android:layout_weight="1.0"/>
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
+                android:layout_weight="1.0"/>
+            <ImageButton
+                android:id="@+id/lightAI2ToggleButton"
+                android:scaleType="centerInside"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/light_ai2_disabled"
+                android:background="@null"
+                android:onClick="toggleLightAI2"
+                android:layout_weight="1.0"/>
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
+                android:layout_weight="1.0"/>
+        </LinearLayout> 
             
         <LinearLayout
             android:id="@+id/lightButtonRow1"

@@ -165,13 +165,6 @@ public class BoardImageAdapter extends BaseAdapter
 		return startPosModel;
 	}
 	
-//    public int getImageOfSquare(int position)
-//    {
-//    	// Call through to model:
-//    	int returnVal = mGameModel.getImageOfPieceAtSquare(position);
-//    	return returnVal;
-//    }
-	
 	public boolean updateAfterMove(int startPos, int endPos)
 	{
     	// Call through to model:

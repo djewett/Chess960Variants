@@ -360,14 +360,9 @@ public class Chess960VariantsActivity extends Activity
 			lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_disabled);
 			getBoardImageAdapter().setLightAI1(false);
 		}
-		else if( !getBoardImageAdapter().getLightAI2() )
-		{
-			lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_enabled);
-			getBoardImageAdapter().setLightAI1(true);
-		}
 		else
 		{
-			// In this case, we need to shut off AI 2 before enabling AI1:
+			// Shut off AI 2 before enabling AI 1:
 			
 			ImageButton lightAI2ToggleButton = 
 				(ImageButton) findViewById(R.id.lightAI2ToggleButton);
@@ -391,14 +386,9 @@ public class Chess960VariantsActivity extends Activity
 			lightAI2ToggleButton.setImageResource(R.drawable.light_ai2_disabled);
 			getBoardImageAdapter().setLightAI2(false);
 		}
-		else if( !getBoardImageAdapter().getLightAI1() )
-		{
-			lightAI2ToggleButton.setImageResource(R.drawable.light_ai2_enabled);
-			getBoardImageAdapter().setLightAI2(true);
-		}
 		else
 		{
-			// In this case, we need to shut off AI 1 before enabling AI1:
+			// Shut off AI 1 before enabling AI 2:
 			
 			ImageButton lightAI1ToggleButton = 
 				(ImageButton) findViewById(R.id.lightAI1ToggleButton);
@@ -422,14 +412,9 @@ public class Chess960VariantsActivity extends Activity
 			darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_disabled);
 			getBoardImageAdapter().setDarkAI1(false);
 		}
-		else if( !getBoardImageAdapter().getDarkAI2() )
-		{
-			darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_enabled);
-			getBoardImageAdapter().setDarkAI1(true);
-		}
 		else
 		{
-			// In this case, we need to shut off AI 2 before enabling AI1:
+			// Shut off AI 2 before enabling AI 1:
 			
 			ImageButton darkAI2ToggleButton = 
 				(ImageButton) findViewById(R.id.darkAI2ToggleButton);
@@ -453,14 +438,9 @@ public class Chess960VariantsActivity extends Activity
 			darkAI2ToggleButton.setImageResource(R.drawable.dark_ai2_disabled);
 			getBoardImageAdapter().setDarkAI2(false);
 		}
-		else if( !getBoardImageAdapter().getDarkAI1() )
-		{
-			darkAI2ToggleButton.setImageResource(R.drawable.dark_ai2_enabled);
-			getBoardImageAdapter().setDarkAI2(true);
-		}
 		else
 		{
-			// In this case, we need to shut off AI 1 before enabling AI1:
+			// Shut off AI 1 before enabling AI 2:
 			
 			ImageButton darkAI1ToggleButton = 
 				(ImageButton) findViewById(R.id.darkAI1ToggleButton);
@@ -718,6 +698,38 @@ public class Chess960VariantsActivity extends Activity
 					(ImageButton) findViewById(R.id.expandButton);
 				expandToggleButton.setImageResource(
 					R.drawable.expand_enabled);
+			}
+			
+			if( getBoardImageAdapter().getGameModel().getLightAI1() )
+			{
+				ImageButton lightAI1ToggleButton = 
+					(ImageButton) findViewById(R.id.lightAI1ToggleButton);
+
+				lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_enabled);
+			}
+			
+			if( getBoardImageAdapter().getGameModel().getLightAI2() )
+			{
+				ImageButton lightAI2ToggleButton = 
+					(ImageButton) findViewById(R.id.lightAI2ToggleButton);
+
+				lightAI2ToggleButton.setImageResource(R.drawable.light_ai2_enabled);
+			}
+			
+			if( getBoardImageAdapter().getGameModel().getDarkAI1() )
+			{
+				ImageButton darkAI1ToggleButton = 
+					(ImageButton) findViewById(R.id.darkAI1ToggleButton);
+
+				darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_enabled);
+			}
+			
+			if( getBoardImageAdapter().getGameModel().getDarkAI2() )
+			{
+				ImageButton darkAI2ToggleButton = 
+					(ImageButton) findViewById(R.id.darkAI2ToggleButton);
+
+				darkAI2ToggleButton.setImageResource(R.drawable.dark_ai2_enabled);
 			}
 		}
 		else

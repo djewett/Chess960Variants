@@ -506,6 +506,11 @@ public class GameModel
 		return mIsDarkAI2;
 	}
 	
+	public pc[][] getBoardRep()
+	{
+		return mGameRep;
+	}
+	
 	private boolean areOpposingPieces(int row1,int col1,int row2,int col2)
 	{
 		// * Not simply the negation of checking whether the squares contain
@@ -1387,8 +1392,8 @@ public class GameModel
 		return thePiece;
 	}
 	
-	private boolean isValidMove( int startRow, int startCol, int endRow, 
-			 					 int endCol, boolean checkOnlyKingCapture )
+	public boolean isValidMove( int startRow, int startCol, int endRow, 
+			 					int endCol, boolean checkOnlyKingCapture )
 	{
 		// checkOnlyKingCapture - this flag will be used to determine if we 
 		// want to check validity of moves like en passant, pins and castling. 
@@ -1484,7 +1489,7 @@ public class GameModel
 		return isValid;
 	}
 	
-	private boolean isLightPiece(pc thePiece)
+	public static boolean isLightPiece(pc thePiece)
 	{
 		// Returns true iff the passed in piece is a light piece:
 		
@@ -1506,7 +1511,7 @@ public class GameModel
 		return isLight;
 	}
 
-	private boolean isDarkPiece(pc thePiece)
+	public static boolean isDarkPiece(pc thePiece)
 	{
 		// Returns true iff the passed in piece is a light piece:
 		

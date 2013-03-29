@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"  
         android:layout_height="match_parent"
         android:background="@color/brown"
-        android:weightSum="9.0">
+        android:weightSum="10.0">
         
         <LinearLayout
             android:id="@+id/darkButtonRow2"
@@ -107,7 +107,34 @@
                 android:layout_height="match_parent"
                 android:background="@color/brown"
                 android:layout_weight="1.0"/>
-        </LinearLayout> 
+        </LinearLayout>
+        
+        <LinearLayout   
+            android:id="@+id/darkAIOutput"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"  
+            android:layout_height="0dp"
+            android:background="@color/brown"
+            android:layout_weight="0.5"
+            android:weightSum="4.0">
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
+                android:layout_weight="1.0"/>
+            <TextView
+                android:id="@+id/darkAITextView"
+                android:scaleType="centerInside"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/blue"
+                android:layout_weight="2.0"/>
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
+                android:layout_weight="1.0"/>
+       </LinearLayout> 
             
         <FrameLayout
             android:id="@+id/darkCapturedPieces"
@@ -181,6 +208,33 @@
             android:gravity="bottom"
             android:background="@color/brown"
             android:layout_weight="1.0"/>
+            
+		<LinearLayout   
+            android:id="@+id/lightAIOutput"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"  
+            android:layout_height="0dp"
+            android:background="@color/brown"
+            android:layout_weight="0.5"
+            android:weightSum="4.0">
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
+                android:layout_weight="1.0"/>
+            <TextView
+                android:id="@+id/lightAITextView"
+                android:scaleType="centerInside"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/blue"
+                android:layout_weight="2.0"/>
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@color/brown"
+                android:layout_weight="1.0"/>
+       </LinearLayout> 
        
        <LinearLayout
             android:id="@+id/lightAILayout"

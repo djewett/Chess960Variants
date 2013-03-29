@@ -742,7 +742,7 @@ public class Chess960VariantsActivity extends Activity
 			// to make room for frame 1 and frame 3 on the screen).
 			
 			// Suggestion: In this case, "chop" a portion off the width of 
-			// rootLayout, to automatically turn it into a (centered) vertcal
+			// rootLayout, to automatically turn it into a (centered) vertical
 			// layout similar to the one for the height > width case.
 			
 			// TODO: Consider using a new layout for a square screen.  This new
@@ -819,8 +819,7 @@ public class Chess960VariantsActivity extends Activity
 	    
 		// Add drag listener for border around board so that if a piece is
 		// dragged there, nothing happens:
-		FrameLayout cf = (FrameLayout) findViewById(R.id.centerFrame);
-		cf.setOnDragListener( new OnDragListenerForDragOffBoard() );
+		cFrame.setOnDragListener( new OnDragListenerForDragOffBoard() );
 		
 		this.setUpButtons();
 		this.clearHighlightsOnBoard();
@@ -1041,6 +1040,8 @@ public class Chess960VariantsActivity extends Activity
                 		mIsPawnPromo = boardImageAdap.updateAfterMove(
                 						   mStartPos,endPosit);
                 		
+                		AIEngine.getNextMove( boardImageAdap.getGameModel() );
+                		
                 		setUpButtons();
                 		
                 		if(mIsPawnPromo)
@@ -1164,6 +1165,9 @@ public class Chess960VariantsActivity extends Activity
                 		
                 	mIsPawnPromo = getBoardImageAdapter().updateAfterMove(
                 					   mStartOfMoveSquare,currPosit);
+                	
+                	AIEngine.getNextMove( 
+                		getBoardImageAdapter().getGameModel() );
                 	
                 	setUpButtons();
                 		

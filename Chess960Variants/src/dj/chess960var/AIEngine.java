@@ -8,6 +8,9 @@ public class AIEngine
 	public static String getNextMove( GameModel gameModel )
 	{
 		////TreeSet<int[]> possibleMoves;
+		
+		// TODO: Use a typedef to make move a 2x2 int[]
+		
 		ArrayList<int[]> possibleMoves = new ArrayList<int[]>(); 
 		
 		final pc[][] BOARD_REP = gameModel.getBoardRep();
@@ -49,9 +52,57 @@ public class AIEngine
 			}
 		}
 		
-		return Integer.toString( possibleMoves.get(0)[0] ) + 
-			   Integer.toString( possibleMoves.get(0)[1] ) + "to" +
-			   Integer.toString( possibleMoves.get(0)[2] ) + 
-			   Integer.toString( possibleMoves.get(0)[3] );
+		return convertMoveToString( possibleMoves.get(0) );
+	}
+	
+	private static String convertMoveToString( int[] theMove )
+	{
+		// TODO: Add an assertion/pre-condition that theMove is 2x2.
+		
+		String fromSquareChar = convertNumberToCharacter( theMove[1] );
+		String toSquareChar = convertNumberToCharacter( theMove[3] );
+		
+		String moveAsString =
+			fromSquareChar + Integer.toString( theMove[0]+1 ) + " to " +
+			toSquareChar + Integer.toString( theMove[2]+1 );
+		
+		return moveAsString;
+	}
+	
+	private static String convertNumberToCharacter( int num )
+	{
+		String theChar = "";
+		
+		switch( num )
+		{
+		case 0:
+			theChar = "a";
+			break;
+		case 1:
+			theChar = "b";
+			break;
+		case 2:
+			theChar = "c";
+			break;
+		case 3:
+			theChar = "d";
+			break;
+		case 4:
+			theChar = "e";
+			break;
+		case 5:
+			theChar = "f";
+			break;
+		case 6:
+			theChar = "g";
+			break;
+		case 7:
+			theChar = "h";
+			break;
+    	default:
+    		throw new AssertionError("Invalid column number");
+		}
+		
+		return theChar;
 	}
 }

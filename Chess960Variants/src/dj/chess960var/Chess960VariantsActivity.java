@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 public class Chess960VariantsActivity extends Activity 
 {	
@@ -1040,7 +1041,11 @@ public class Chess960VariantsActivity extends Activity
                 		mIsPawnPromo = boardImageAdap.updateAfterMove(
                 						   mStartPos,endPosit);
                 		
-                		AIEngine.getNextMove( boardImageAdap.getGameModel() );
+                		String nextMove = AIEngine.getNextMove( 
+                							  boardImageAdap.getGameModel() );
+                		TextView lightAITextOutputBox = 
+                				(TextView) findViewById(R.id.lightAITextView);
+                		lightAITextOutputBox.setText(nextMove);
                 		
                 		setUpButtons();
                 		
@@ -1166,8 +1171,13 @@ public class Chess960VariantsActivity extends Activity
                 	mIsPawnPromo = getBoardImageAdapter().updateAfterMove(
                 					   mStartOfMoveSquare,currPosit);
                 	
-                	AIEngine.getNextMove( 
-                		getBoardImageAdapter().getGameModel() );
+                	//TODO: Factor this code:
+                	String nextMove = 
+                		AIEngine.getNextMove( 
+                			getBoardImageAdapter().getGameModel() );
+            		TextView lightAITextOutputBox = 
+            				(TextView) findViewById(R.id.lightAITextView);
+            		lightAITextOutputBox.setText(nextMove);
                 	
                 	setUpButtons();
                 		

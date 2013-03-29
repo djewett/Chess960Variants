@@ -349,6 +349,41 @@ public class Chess960VariantsActivity extends Activity
 		this.redrawScreen();
 	}
 	
+	public void clearAI()
+	{
+		// Clear text boxes:
+		
+		TextView lightAITextOutputBox = 
+    			(TextView) findViewById(R.id.lightAITextView);
+		lightAITextOutputBox.setText("");
+		
+		TextView darkAITextOutputBox = 
+    			(TextView) findViewById(R.id.darkAITextView);
+		darkAITextOutputBox.setText("");
+		
+		// Toggle all buttons to off:
+		
+		ImageButton lightAI1ToggleButton = 
+			(ImageButton) findViewById(R.id.lightAI1ToggleButton);
+		lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_disabled);
+		getBoardImageAdapter().setLightAI1(false);
+		
+		ImageButton darkAI1ToggleButton = 
+			(ImageButton) findViewById(R.id.darkAI1ToggleButton);
+		darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_disabled);
+		getBoardImageAdapter().setDarkAI1(false);
+			
+		ImageButton lightAI2ToggleButton = 
+			(ImageButton) findViewById(R.id.lightAI2ToggleButton);
+		lightAI2ToggleButton.setImageResource(R.drawable.light_ai2_disabled);
+		getBoardImageAdapter().setLightAI2(false);
+			
+		ImageButton darkAI2ToggleButton = 
+			(ImageButton) findViewById(R.id.darkAI2ToggleButton);
+		darkAI2ToggleButton.setImageResource(R.drawable.dark_ai2_disabled);
+		getBoardImageAdapter().setDarkAI2(false);
+	}
+	
 	public void toggleLightAI1(View view)
 	{
 		// * Note: view passed in is a reference to the widget that was clicked
@@ -358,8 +393,17 @@ public class Chess960VariantsActivity extends Activity
 		
 		if( getBoardImageAdapter().getLightAI1() )
 		{
+			// Switch toggle off if it was on when selected:
+			
 			lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_disabled);
 			getBoardImageAdapter().setLightAI1(false);
+			
+			// Clear AI text box when switching toggle off:
+			
+			TextView lightAITextOutputBox = 
+	    			(TextView) findViewById(R.id.lightAITextView);
+			
+			lightAITextOutputBox.setText("");
 		}
 		else
 		{
@@ -372,6 +416,18 @@ public class Chess960VariantsActivity extends Activity
 			
 			lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_enabled);
 			getBoardImageAdapter().setLightAI1(true);
+			
+			// Run AI to generate a move if toggle is switched on:
+			
+			TextView lightAITextOutputBox = 
+    			(TextView) findViewById(R.id.lightAITextView);
+			
+    		TextView darkAITextOutputBox = 
+    			(TextView) findViewById(R.id.darkAITextView);
+    		
+            Chess960VariantsActivity.runAI( getBoardImageAdapter(),
+											lightAITextOutputBox,
+											darkAITextOutputBox );
 		}
 	}
 	
@@ -410,8 +466,17 @@ public class Chess960VariantsActivity extends Activity
 		
 		if( getBoardImageAdapter().getDarkAI1() )
 		{
+			// Switch toggle off if it was on when selected:
+			
 			darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_disabled);
 			getBoardImageAdapter().setDarkAI1(false);
+			
+			// Clear AI text box when switching toggle off:
+			
+			TextView darkAITextOutputBox = 
+	    			(TextView) findViewById(R.id.lightAITextView);
+			
+			darkAITextOutputBox.setText("");
 		}
 		else
 		{
@@ -424,6 +489,18 @@ public class Chess960VariantsActivity extends Activity
 			
 			darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_enabled);
 			getBoardImageAdapter().setDarkAI1(true);
+			
+			// Run AI to generate a move if toggle is switched on:
+			
+			TextView lightAITextOutputBox = 
+    			(TextView) findViewById(R.id.lightAITextView);
+    	
+    		TextView darkAITextOutputBox = 
+    			(TextView) findViewById(R.id.darkAITextView);
+            		
+            Chess960VariantsActivity.runAI( getBoardImageAdapter(),
+											lightAITextOutputBox,
+											darkAITextOutputBox );
 		}
 	}
 	
@@ -491,6 +568,60 @@ public class Chess960VariantsActivity extends Activity
 	public void selectDarkKnight(View view)
 	{
         selectPiece(GameModel.pc.dN);
+	}
+	
+	public static void runAI( BoardImageAdapter boardImageAdap,
+							  TextView lightAITextOutputBox,
+							  TextView darkAITextOutputBox )
+	{
+		if( boardImageAdap.isLightsTurn() &&
+        	boardImageAdap.getLightAI1() )
+        {
+			String nextMove = 
+				AIEngine.getNextMove( boardImageAdap.getGameModel() );
+	
+			//TextView lightAITextOutputBox = 
+				//(TextView) findViewById(R.id.lightAITextView);
+	
+			lightAITextOutputBox.setText(nextMove);
+	
+			// Clear dark AI text box:
+	
+			//TextView darkAITextOutputBox = 
+				//(TextView) findViewById(R.id.darkAITextView);
+		
+			darkAITextOutputBox.setText("");
+        }
+        else if( !boardImageAdap.isLightsTurn() &&
+        		boardImageAdap.getDarkAI1() )
+        {
+            	String nextMove = 
+				AIEngine.getNextMove( boardImageAdap.getGameModel() );
+		
+			//TextView darkAITextOutputBox = 
+				//(TextView) findViewById(R.id.darkAITextView);
+		
+			darkAITextOutputBox.setText(nextMove);
+	
+			// Clear light AI text box:
+	
+			//TextView lightAITextOutputBox = 
+				//(TextView) findViewById(R.id.lightAITextView);
+		
+			lightAITextOutputBox.setText("");
+        }
+        else
+        {
+        	//TextView lightAITextOutputBox = 
+				//(TextView) findViewById(R.id.lightAITextView);
+
+			lightAITextOutputBox.setText("");
+	
+			//TextView darkAITextOutputBox = 
+				//(TextView) findViewById(R.id.darkAITextView);
+		
+			darkAITextOutputBox.setText("");
+        }
 	}
 	
 	private void selectPiece(GameModel.pc thePiece)
@@ -1041,12 +1172,6 @@ public class Chess960VariantsActivity extends Activity
                 		mIsPawnPromo = boardImageAdap.updateAfterMove(
                 						   mStartPos,endPosit);
                 		
-                		String nextMove = AIEngine.getNextMove( 
-                							  boardImageAdap.getGameModel() );
-                		TextView lightAITextOutputBox = 
-                				(TextView) findViewById(R.id.lightAITextView);
-                		lightAITextOutputBox.setText(nextMove);
-                		
                 		setUpButtons();
                 		
                 		if(mIsPawnPromo)
@@ -1066,6 +1191,18 @@ public class Chess960VariantsActivity extends Activity
                 		// Reset for next move:
                 		mStartOfMoveSquare = mINVALIDSQUARE;
                 		mHasEnteredOtherSquare = false;
+                		
+                		/*
+            			TextView lightAITextOutputBox = 
+        				    (TextView) findViewById(R.id.lightAITextView);
+                		TextView darkAITextOutputBox = 
+        				    (TextView) findViewById(R.id.darkAITextView);
+                		Chess960VariantsActivity.runAI( 
+                			boardImageAdap,
+  							lightAITextOutputBox,
+  							darkAITextOutputBox );
+  							*/
+                		clearAI();
                 	}
                 	else
                 	{
@@ -1171,14 +1308,6 @@ public class Chess960VariantsActivity extends Activity
                 	mIsPawnPromo = getBoardImageAdapter().updateAfterMove(
                 					   mStartOfMoveSquare,currPosit);
                 	
-                	//TODO: Factor this code:
-                	String nextMove = 
-                		AIEngine.getNextMove( 
-                			getBoardImageAdapter().getGameModel() );
-            		TextView lightAITextOutputBox = 
-            				(TextView) findViewById(R.id.lightAITextView);
-            		lightAITextOutputBox.setText(nextMove);
-                	
                 	setUpButtons();
                 		
                 	if(mIsPawnPromo)
@@ -1200,6 +1329,18 @@ public class Chess960VariantsActivity extends Activity
                 	// Reset for next move:
                 	mStartOfMoveSquare = mINVALIDSQUARE;
                 	mHasEnteredOtherSquare = false;
+            		
+                	/*
+        			TextView lightAITextOutputBox = 
+        				(TextView) findViewById(R.id.lightAITextView);
+        			TextView darkAITextOutputBox = 
+        				(TextView) findViewById(R.id.darkAITextView);
+                	Chess960VariantsActivity.runAI( 
+                		getBoardImageAdapter(),
+  						lightAITextOutputBox,
+  						darkAITextOutputBox );
+                	*/
+                	clearAI();
                 	
                 	return true;
     			}

@@ -4,6 +4,17 @@ import dj.chess960var.GameModel.pc;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
+// For reference - positions:
+//
+//  dR dN dB dQ dK dB dN dR  =  0  1  2  3  4  5  6  7
+//  dP dP dP dP dP dP dP dP  =  8  9  10 11 12 13 14 15
+//  eS eS eS eS eS eS eS eS  =  16 17 18 19 20 21 22 23
+//  eS eS eS eS eS eS eS eS  =  24 25 26 27 28 29 30 31
+//  eS eS eS eS eS eS eS eS  =  32 33 34 35 36 37 38 39
+//  eS eS eS eS eS eS eS eS  =  40 41 42 43 44 45 46 47
+//  lP lP lP lP lP lP lP lP  =  48 49 50 51 52 53 54 55
+//  lR lN lB lQ lK lB lN lR  =  56 57 58 59 60 61 62 63
+
 public class AIEngine 
 {
 	public static String getNextMove( GameModel gameModel )
@@ -14,60 +25,54 @@ public class AIEngine
 		// represent the starting square and the second two ints represent
 		// the square that the piece is on after the move).
 		
-		boolean isLightsTurn = gameModel.isLightsTurn();
+		////boolean isLightsTurn = gameModel.isLightsTurn();
 		
-		final pc[][] BOARD_REP = gameModel.getBoardRep();
+		////final pc[][] BOARD_REP = gameModel.getBoardRep();
 		
-		ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel,
-				  										   isLightsTurn,
-				  										   BOARD_REP );
+		//ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel );
 		
-		ArrayList<int[]> decreasedPossibleMoves = 
-			trimPossibleMoves( BOARD_REP, possibleMoves, isLightsTurn );
+		//ArrayList<int[]> decreasedPossibleMoves = 
+		//	trimPossibleMoves( gameModel, possibleMoves );
 		
-		int[] theMoveToMake = evaluateMoves( BOARD_REP, 
-											 decreasedPossibleMoves );
+		//int[] theMoveToMake = evaluateMoves( gameModel, 
+		//									 decreasedPossibleMoves );
 		
-		return convertMoveToString( theMoveToMake );
+		//return convertMoveToString( theMoveToMake );
+		
+		return "";
 	}
 	
-	private static ArrayList<int[]> getPossibleMoves( GameModel gameModel,
-													  boolean isLightsTurn,
-													  pc[][] board_rep )
+	private static ArrayList<int[]> getPossibleMoves( GameModel gameModel )
 	{
+		boolean isLightsTurn = gameModel.isLightsTurn();
+		////pc[][] board_rep = gameModel.getBoardRep();
+		
 		ArrayList<int[]> possibleMoves = new ArrayList<int[]>(); 
 		
-		for( int i = 0; i < board_rep.length; i++ )
+		for( int oldPos = 0; oldPos < 64; oldPos++ )
 		{
-			for( int j = 0; j < board_rep[0].length; j++ )
+			// Create a list of possible moves in next two loops and sort
+			// them according to some evaluation function and only keep
+			// the top 10 or so:
+				
+			////pc piece = board_rep[i][j];
+			pc currPiece = gameModel.getPieceAtSquare(oldPos);
+				
+			//if( BOARD_REP[i][j] != pc.eS )
+			if( (isLightsTurn && GameModel.isLightPiece(currPiece)) ||
+				(!isLightsTurn && GameModel.isDarkPiece(currPiece)) )
 			{
-				// Create a list of possible moves in next two loops and sort
-				// them according to some evaluation function and only keep
-				// the top 10 or so:
-				
-				pc piece = board_rep[i][j];
-				
-				//if( BOARD_REP[i][j] != pc.eS )
-				if( (isLightsTurn && GameModel.isLightPiece(piece)) ||
-					(!isLightsTurn && GameModel.isDarkPiece(piece)) )
+				for( int newPos = 0; newPos < 64; newPos++ )
 				{
-					for( int newI = 0; newI < board_rep.length; newI++ )
+					if( (oldPos != newPos)  &&
+						gameModel.isValidMove(oldPos,newPos,false) )
 					{
-						for( int newJ = 0; newJ < board_rep.length; newJ++ )
-						{
-							if( (i != newI || j != newJ)  &&
-								gameModel.isValidMove(i,j,newI,newJ,false) )
-							{
-								int[] move = new int[5]; 
-									// {startRow,startCol,endRow,endCol,value}
-								move[0] = i;
-								move[1] = j;
-								move[2] = newI;
-								move[3] = newJ;
+						int[] move = new int[3]; // {startPos,endPos,value}
+						move[0] = oldPos;
+						move[1] = newPos;
+						move[3] = -17; // For now, obscure value for testing
 								
-								possibleMoves.add(move);
-							}
-						}
+						possibleMoves.add(move);
 					}
 				}
 			}
@@ -77,14 +82,16 @@ public class AIEngine
 	}
 	
 	private static ArrayList<int[]> trimPossibleMoves( 
-		pc[][] board_rep,
-		ArrayList<int[]> possibleMoves,
-		boolean isLightsTurn )
+		GameModel gameModel,
+		ArrayList<int[]> possibleMoves )
 	{
 		// This function should take in a list of possible moves and trim 
 		// away some of the obviously bad moves (as well as some of the less 
 		// obviously bad ones) and return a new list of potential moves that 
 		// is as small as possible.
+		
+		boolean isLightsTurn = gameModel.isLightsTurn();
+		pc[][] board_rep = gameModel.getBoardRep();
 
 		// Use evaluatePosition() function and keep top 10 moves:
 		
@@ -116,7 +123,7 @@ public class AIEngine
 			new_board_rep[currMove[0]][currMove[1]] = pc.eS;
 			new_board_rep[currMove[2]][currMove[3]] = movingPiece;
 			
-			int currValue = evaluatePosition( new_board_rep, isLightsTurn );
+			//int currValue = evaluatePosition( new_board_rep, isLightsTurn );
 			
 			//thePQ.
 		}
@@ -125,9 +132,12 @@ public class AIEngine
 		return possibleMoves;
 	}
 	
-	private static int[] evaluateMoves( pc[][] board_rep,
+	private static int[] evaluateMoves( GameModel gameModel,
 										ArrayList<int[]> moves )
 	{
+		////boolean isLightsTurn = gameModel.isLightsTurn();
+		pc[][] board_rep = gameModel.getBoardRep();
+		
 		// This function should take in a list of moves, evaluate all of them, 
 		// and return the best one, according to the evaluation function.
 		// This is the "imperfect information" step.
@@ -138,14 +148,72 @@ public class AIEngine
 		return moves.get(0);
 	}
 	
-	private static int evaluatePosition( pc[][] board_rep, 
-										 boolean isLightsTurn )
+	private static int evaluateMove( GameModel gameModel,
+									 int[] theMove,
+									 boolean evaluateForLight,
+									 int depth )
+	{
+		////boolean isLightsTurn = gameModel.isLightsTurn();
+		////pc[][] board_rep = gameModel.getBoardRep();
+		
+		int value = -99999; // TODO: lowest integer
+		
+		if( 0 == depth )
+		{
+			value = evaluatePosition( gameModel, 
+					 				  evaluateForLight );
+		}
+		else
+		{
+			// Set value to minimum value over all possible moves after 
+			// "theMove":
+			
+			ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel );
+			
+			for( int i = 0; i < possibleMoves.size(); i++ )
+			{
+				GameModel newGM = new GameModel(gameModel);
+				
+				newGM.updateAfterMove( possibleMoves.get(i)[0], 
+									   possibleMoves.get(i)[1] );
+				
+				//evaluateMove( new_board,
+				//		 	  theMove,
+				//		      evaluateForLight,
+				//		      !isLightsTurn,
+				//		      depth-1 )
+			}
+		}
+		
+		return value;
+	}
+	
+	/*
+	private static pc[][] getNewBoardAfterMove( GameModel gameModel,
+			 						 			int[] theMove )
+	{
+		pc movingPiece = board_rep[theMove[0]][theMove[1]];
+			
+		pc[][] new_board_rep = board_rep;
+			
+		new_board_rep[theMove[0]][theMove[1]] = pc.eS;
+		new_board_rep[theMove[2]][theMove[3]] = movingPiece;
+		
+		return new_board_rep;
+	}
+	*/
+
+	private static int evaluatePosition( GameModel gameModel,
+										 boolean evaluateForLight )
 	{
 		// Given a representation of the board, where pieces are on the
 		// board and whose move it is, this function generates a "utility"
 		// for that state in the game.  This utility should be a measure of
 		// how good the given position is for whoever's turn it is.  It
 		// can be positive or negative.
+		
+		////boolean isLightsTurn = gameModel.isLightsTurn();
+		pc[][] board_rep = gameModel.getBoardRep();
 		
 		// We want to check for basic things here like:
 		//
@@ -194,7 +262,7 @@ public class AIEngine
 			
 		int returnVal = 0;
 
-		if( isLightsTurn )
+		if( evaluateForLight )
 			returnVal = lightsScore - darksScore;
 		else
 			returnVal = darksScore - lightsScore;

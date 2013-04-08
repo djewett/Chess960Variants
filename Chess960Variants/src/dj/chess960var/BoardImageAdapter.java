@@ -118,7 +118,7 @@ public class BoardImageAdapter extends BaseAdapter
 	
 	public void restart()
 	{
-		mGameModel = mGameModel.getStartPositionModel();
+		///////mGameModel = mGameModel.getStartPositionModel();
 		this.notifyDataSetChanged();
 	}
 	
@@ -161,8 +161,9 @@ public class BoardImageAdapter extends BaseAdapter
 	public GameModel getStartPositionModel()
 	{
 		// Call through to model:
-		GameModel startPosModel = mGameModel.getStartPositionModel();
-		return startPosModel;
+		///////GameModel startPosModel = mGameModel.getStartPositionModel();
+		///////return startPosModel;
+		return mGameModel;///////
 	}
 	
 	public boolean updateAfterMove(int startPos, int endPos)
@@ -228,7 +229,7 @@ public class BoardImageAdapter extends BaseAdapter
 	public void undoMove()
 	{
 		// Call through to model:
-		mGameModel = mGameModel.getModelForUndo();
+		///////mGameModel = mGameModel.getModelForUndo();
 		this.notifyDataSetChanged();
 	}
 	

@@ -30,6 +30,13 @@ public class Utilities {
     	return position%8;
     }
     
+    public static int getPositionGivenRowAndCol(int row, int col)
+    {
+    	int position = 8*(7-row)-1+col;
+    	
+    	return position;
+    }
+    
 	public static int[] findPaddingValuesAndWidthOfBoard(
 		int totalAvailableWidth,
 		boolean isBoardExpanded )

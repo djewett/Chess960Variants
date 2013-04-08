@@ -17,8 +17,12 @@ public class GameModel
 	// Need two randomizers so that we can assign the same seeds to each so that
 	// dark's setup will mirror light's:
 	private long mSeed;
-	private Random mRandomizer_lightPieces;
-	private Random mRandomizer_darkPieces;
+	// TODO: Revert changes made for efficient AI testing:
+	// TODO: Remove all /////// in front of any lines 
+	// TODO: and remove all lines succeeded by ///////
+	// TODO: Also do this in BoardImageAdapter.java
+	///////private Random mRandomizer_lightPieces;
+	///////private Random mRandomizer_darkPieces;
 	
 	// Stores the column of the last 2-square pawn move if that was the last 
 	// move in the game.  Used for determining whether an en passant move is
@@ -39,7 +43,7 @@ public class GameModel
 	
 	private int[] mPositionOfCurrentPawnPromo;
 	
-	private GameModel mModelForUndo;
+	///////private GameModel mModelForUndo;
 	
     public enum pc
     {
@@ -86,8 +90,8 @@ public class GameModel
         // different each time the application starts:
     	mSeed = (new Random()).nextLong();
     	
-    	mRandomizer_lightPieces = new Random(mSeed);
-    	mRandomizer_darkPieces = new Random(mSeed);
+    	///////mRandomizer_lightPieces = new Random(mSeed);
+    	///////mRandomizer_darkPieces = new Random(mSeed);
     	mEnPassantPotentialColumn = mINVALIDROWCOL;
     	mIsLightKingSideCastleStillPoss = true;
     	mIsLightQueenSideCastleStillPoss = true;
@@ -102,7 +106,7 @@ public class GameModel
     	mPositionOfCurrentPawnPromo[0] = mINVALIDROWCOL;
     	mPositionOfCurrentPawnPromo[1] = mINVALIDROWCOL;
     	
-    	mModelForUndo = null;
+    	///////mModelForUndo = null;
     }
     
     public GameModel(GameModel gM) // Copy CTOR
@@ -126,8 +130,8 @@ public class GameModel
     	mIsDarkAI1 = gM.mIsDarkAI1;
     	mIsDarkAI2 = gM.mIsDarkAI2;
     	mSeed = gM.mSeed;
-    	mRandomizer_lightPieces = gM.mRandomizer_lightPieces;
-    	mRandomizer_darkPieces = gM.mRandomizer_darkPieces;
+    	///////mRandomizer_lightPieces = gM.mRandomizer_lightPieces;
+    	///////mRandomizer_darkPieces = gM.mRandomizer_darkPieces;
     	mEnPassantPotentialColumn = gM.mEnPassantPotentialColumn;
     	mIsLightKingSideCastleStillPoss = gM.mIsLightKingSideCastleStillPoss;
     	mIsLightQueenSideCastleStillPoss = gM.mIsLightQueenSideCastleStillPoss;
@@ -143,10 +147,10 @@ public class GameModel
     	mPositionOfCurrentPawnPromo[1] = gM.mPositionOfCurrentPawnPromo[1];
     	
     	// Recursive:
-    	if( null == gM.mModelForUndo )
-    		mModelForUndo = null;
-    	else
-    		mModelForUndo = new GameModel(gM.mModelForUndo);
+    	///////if( null == gM.mModelForUndo )
+    		///////mModelForUndo = null;
+    	///////else
+    		///////mModelForUndo = new GameModel(gM.mModelForUndo);
     }
     
 	public void resetRow(int row)
@@ -165,7 +169,7 @@ public class GameModel
 			
 			// Also reset the appropriate randomizer so that we'll get the same 
 			// sequence of randomized rows as before the reset:
-			mRandomizer_lightPieces = new Random(mSeed);
+			///////mRandomizer_lightPieces = new Random(mSeed);
 		}
 		else if(7 == row)
 		{
@@ -181,7 +185,7 @@ public class GameModel
 			
 			// Also reset the appropriate randomizer so that we'll get the same 
 			// sequence of randomized rows as before the reset:
-			mRandomizer_darkPieces = new Random(mSeed);
+			///////mRandomizer_darkPieces = new Random(mSeed);
 		}
 		else
 		{
@@ -198,11 +202,12 @@ public class GameModel
 	public void randomizeRow(int row)
 	{	
 		// Retrieve the appropriate randomizer:
-		Random randomizer;
+		///////Random randomizer;
+		Random randomizer = new Random();///////
 		if(0 == row)
-			randomizer = mRandomizer_lightPieces;
+			{}///////randomizer = mRandomizer_lightPieces;
 		else if(7 == row)
-			randomizer = mRandomizer_darkPieces;
+			{}///////randomizer = mRandomizer_darkPieces;
 		else
 			throw new AssertionError(
 				"Invalid row for randomization - must be 0 or 7");
@@ -344,22 +349,23 @@ public class GameModel
 	
 	public boolean hasGameStarted()
 	{
-		boolean hasStarted = null != mModelForUndo;
-		return hasStarted;
+		///////boolean hasStarted = null != mModelForUndo;
+		///////return hasStarted;
+		return true;///////
 	}
 	
-	public GameModel getModelForUndo()
-	{
-		return mModelForUndo;
-	}
+	///////public GameModel getModelForUndo()
+	///////{
+		///////return mModelForUndo;
+	///////}
 	
-	public GameModel getStartPositionModel()
-	{
-		GameModel currModel = this;
-		while(null != currModel.mModelForUndo)
-			currModel = currModel.mModelForUndo;
-		return currModel;
-	}
+	///////public GameModel getStartPositionModel()
+	///////{
+		///////GameModel currModel = this;
+		///////while(null != currModel.mModelForUndo)
+			///////currModel = currModel.mModelForUndo;
+		///////return currModel;
+	///////}
 	
 	public pc getPieceAtSquare(int position)
     {
@@ -1166,7 +1172,7 @@ public class GameModel
 	private boolean updateAfterMove(
 		int startRow, int startCol, int endRow, int endCol)
 	{
-		mModelForUndo = new GameModel(this);
+		///////mModelForUndo = new GameModel(this);
 		
 		boolean isPawnPromotion = false;
 		

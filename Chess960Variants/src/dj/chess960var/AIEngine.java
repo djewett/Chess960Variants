@@ -31,29 +31,31 @@ public class AIEngine
 		ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel );
 		
 		// TODO: Factor this code with similar code in evaluateMove():
-		//
+
 		boolean isLightsTurn = gameModel.isLightsTurn();
-		int value = -99999; // TODO: lowest integer
-		if( !isLightsTurn )
-			value = 99999; // TODO: largest integer
+		
+		int value;
+		
+		if( isLightsTurn )
+			value = Integer.MIN_VALUE;
+		else
+			value = Integer.MAX_VALUE;
+		
 		int indexOfMoveToMake = -1;
-		//
+
 		for( int i = 0; i < possibleMoves.size(); i++ )
 		{
 			GameModel newGM = new GameModel(gameModel);
 			
-			newGM.updateAfterMove( possibleMoves.get(i)[0], 
-								   possibleMoves.get(i)[1] );
-			
 			int newValue = evaluateMove( newGM, 
 					 					 possibleMoves.get(i), 
-					 					 3 );
+					 					 2 );
 			
 			if( (isLightsTurn && newValue > value) ||
 				(!isLightsTurn && newValue < value) )
 			{
-					value = newValue;
-					indexOfMoveToMake = i;
+				value = newValue;
+				indexOfMoveToMake = i;
 			}
 		}
 		
@@ -95,7 +97,7 @@ public class AIEngine
 						int[] move = new int[3]; // {startPos,endPos,value}
 						move[0] = oldPos;
 						move[1] = newPos;
-						move[3] = -17; // For now, obscure value for testing
+						move[2] = -17; // For now, obscure value for testing
 								
 						possibleMoves.add(move);
 					}
@@ -181,33 +183,35 @@ public class AIEngine
 		// (so we will never perform an evaulation for white when it is black's
 		// turn and vice-versa).
 		
-		boolean isLightsTurn = gameModel.isLightsTurn();
-		
 		// For now, just do minimax without alpa-beta pruning
 		// TODO: Add alpha-beta pruning
 		
-		int value = -99999; // TODO: lowest integer
-		if( !isLightsTurn )
-			value = 99999; // TODO: largest integer
+		GameModel newGM = new GameModel(gameModel);
+		
+		newGM.updateAfterMove( theMove[0], theMove[1] );
+		
+		int value;
 		
 		if( 0 == depth )
-		{
-			value = evaluatePosition( gameModel );
+		{		
+			value = evaluatePosition( newGM );
 		}
 		else
 		{
 			// Set value to minimum value over all possible moves after 
 			// "theMove":
 			
-			ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel );
+			boolean isLightsTurn = newGM.isLightsTurn();
+			
+			if( isLightsTurn )
+				value = Integer.MIN_VALUE;
+			else
+				value = Integer.MAX_VALUE;
+			
+			ArrayList<int[]> possibleMoves = getPossibleMoves( newGM );
 			
 			for( int i = 0; i < possibleMoves.size(); i++ )
 			{
-				GameModel newGM = new GameModel(gameModel);
-				
-				newGM.updateAfterMove( possibleMoves.get(i)[0], 
-									   possibleMoves.get(i)[1] );
-				
 				int newValue = evaluateMove( newGM, 
 											 possibleMoves.get(i), 
 											 depth-1 );
@@ -366,7 +370,7 @@ public class AIEngine
 					darksMaterial += 300;
 					break;
 				case dB:
-					darksMaterial += 350;
+					darksMaterial += 325;
 					break;
 				case dR:
 					darksMaterial += 500;

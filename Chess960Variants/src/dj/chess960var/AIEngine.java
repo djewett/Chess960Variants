@@ -1,6 +1,5 @@
 package dj.chess960var;
 import dj.chess960var.GameModel.pc;
-////import java.util.TreeSet;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
@@ -17,19 +16,46 @@ import java.util.PriorityQueue;
 
 public class AIEngine 
 {
+	private static String[] mSquares = 
+		{ "a8","b8","c8","d8","e8","f8","g8","h8",
+		  "a7","b7","c7","d7","e7","f7","g7","h7",
+		  "a6","b6","c6","d6","e6","f6","g6","h6",
+		  "a5","b5","c5","d5","e5","f5","g5","h5",
+		  "a4","b4","c4","d4","e4","f4","g4","h4",
+		  "a3","b3","c3","d3","e3","f3","g3","h3",
+		  "a2","b2","c2","d2","e2","f2","g2","h2",
+		  "a1","b1","c1","d1","e1","f1","g1","h1" };
+
 	public static String getNextMove( GameModel gameModel )
 	{
-		////TreeSet<int[]> possibleMoves;
+		ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel );
 		
-		// Each move is represented as a 2x2 array of ints (the first two ints
-		// represent the starting square and the second two ints represent
-		// the square that the piece is on after the move).
-		
-		////boolean isLightsTurn = gameModel.isLightsTurn();
-		
-		////final pc[][] BOARD_REP = gameModel.getBoardRep();
-		
-		//ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel );
+		// TODO: Factor this code with similar code in evaluateMove():
+		//
+		boolean isLightsTurn = gameModel.isLightsTurn();
+		int value = -99999; // TODO: lowest integer
+		if( !isLightsTurn )
+			value = 99999; // TODO: largest integer
+		int indexOfMoveToMake = -1;
+		//
+		for( int i = 0; i < possibleMoves.size(); i++ )
+		{
+			GameModel newGM = new GameModel(gameModel);
+			
+			newGM.updateAfterMove( possibleMoves.get(i)[0], 
+								   possibleMoves.get(i)[1] );
+			
+			int newValue = evaluateMove( newGM, 
+					 					 possibleMoves.get(i), 
+					 					 3 );
+			
+			if( (isLightsTurn && newValue > value) ||
+				(!isLightsTurn && newValue < value) )
+			{
+					value = newValue;
+					indexOfMoveToMake = i;
+			}
+		}
 		
 		//ArrayList<int[]> decreasedPossibleMoves = 
 		//	trimPossibleMoves( gameModel, possibleMoves );
@@ -37,15 +63,14 @@ public class AIEngine
 		//int[] theMoveToMake = evaluateMoves( gameModel, 
 		//									 decreasedPossibleMoves );
 		
-		//return convertMoveToString( theMoveToMake );
+		return convertMoveToString( possibleMoves.get(indexOfMoveToMake) );
 		
-		return "";
+		////return "";
 	}
 	
 	private static ArrayList<int[]> getPossibleMoves( GameModel gameModel )
 	{
 		boolean isLightsTurn = gameModel.isLightsTurn();
-		////pc[][] board_rep = gameModel.getBoardRep();
 		
 		ArrayList<int[]> possibleMoves = new ArrayList<int[]>(); 
 		
@@ -150,18 +175,24 @@ public class AIEngine
 	
 	private static int evaluateMove( GameModel gameModel,
 									 int[] theMove,
-									 boolean evaluateForLight,
 									 int depth )
 	{
-		////boolean isLightsTurn = gameModel.isLightsTurn();
-		////pc[][] board_rep = gameModel.getBoardRep();
+		// Assumption: we only ever care to evaluate a move if it is our turn
+		// (so we will never perform an evaulation for white when it is black's
+		// turn and vice-versa).
+		
+		boolean isLightsTurn = gameModel.isLightsTurn();
+		
+		// For now, just do minimax without alpa-beta pruning
+		// TODO: Add alpha-beta pruning
 		
 		int value = -99999; // TODO: lowest integer
+		if( !isLightsTurn )
+			value = 99999; // TODO: largest integer
 		
 		if( 0 == depth )
 		{
-			value = evaluatePosition( gameModel, 
-					 				  evaluateForLight );
+			value = evaluatePosition( gameModel );
 		}
 		else
 		{
@@ -177,11 +208,13 @@ public class AIEngine
 				newGM.updateAfterMove( possibleMoves.get(i)[0], 
 									   possibleMoves.get(i)[1] );
 				
-				//evaluateMove( new_board,
-				//		 	  theMove,
-				//		      evaluateForLight,
-				//		      !isLightsTurn,
-				//		      depth-1 )
+				int newValue = evaluateMove( newGM, 
+											 possibleMoves.get(i), 
+											 depth-1 );
+				
+				if( (isLightsTurn && newValue > value) ||
+					(!isLightsTurn && newValue < value) )
+						value = newValue;
 			}
 		}
 		
@@ -203,16 +236,15 @@ public class AIEngine
 	}
 	*/
 
-	private static int evaluatePosition( GameModel gameModel,
-										 boolean evaluateForLight )
+	private static int evaluatePosition( GameModel gameModel )
 	{
 		// Given a representation of the board, where pieces are on the
 		// board and whose move it is, this function generates a "utility"
 		// for that state in the game.  This utility should be a measure of
-		// how good the given position is for whoever's turn it is.  It
+		// how good the given position is for white (so white wants to
+		// maximize these values and black wants to minimize).  It
 		// can be positive or negative.
 		
-		////boolean isLightsTurn = gameModel.isLightsTurn();
 		pc[][] board_rep = gameModel.getBoardRep();
 		
 		// We want to check for basic things here like:
@@ -259,15 +291,8 @@ public class AIEngine
 			darksScore += 125;
 		else {}
 			// Do nothing
-			
-		int returnVal = 0;
 
-		if( evaluateForLight )
-			returnVal = lightsScore - darksScore;
-		else
-			returnVal = darksScore - lightsScore;
-		
-		return returnVal;
+		return lightsScore - darksScore;
 	}
 	
 	private static int getLightsMaterial( pc[][] board_rep )
@@ -360,17 +385,12 @@ public class AIEngine
 	
 	private static String convertMoveToString( int[] theMove )
 	{
-		// This is a simple function that converts a 2x2 array representation
-		// of a move to a String representation (for output).
-		
-		// TODO: Add an assertion/pre-condition that theMove is 2x2.
-		
-		String fromSquareChar = convertNumberToCharacter( theMove[1] );
-		String toSquareChar = convertNumberToCharacter( theMove[3] );
+		// Moves are represented as arrays of ints, where the first element
+		// is the start position of the move and the second element is the
+		// ending position of the move.
 		
 		String moveAsString =
-			fromSquareChar + Integer.toString( theMove[0]+1 ) + " to " +
-			toSquareChar + Integer.toString( theMove[2]+1 );
+				mSquares[theMove[0]] + " to " + mSquares[theMove[1]];
 		
 		return moveAsString;
 	}

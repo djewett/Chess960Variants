@@ -27,14 +27,15 @@ public class AIEngine
           "a2","b2","c2","d2","e2","f2","g2","h2",
           "a1","b1","c1","d1","e1","f1","g1","h1" };
 
+    // Main public interface to the AIEngine class:
     public static String getNextMove( GameModel gameModel )
     {
-        ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel );
+        boolean isLightsTurn = gameModel.isLightsTurn();
+        
+        ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel, isLightsTurn );
         
         // TODO: Factor this code with similar code in evaluateMove():
 
-        boolean isLightsTurn = gameModel.isLightsTurn();
-        
         int value;
         
         if( isLightsTurn )
@@ -43,14 +44,19 @@ public class AIEngine
             value = Integer.MAX_VALUE;
         
         int indexOfMoveToMake = -1;
+        
+        // Note: Since this is the root node of minimax, parameter lightToMove
+        // (which tells us whose move it is at the root node) here is equal to
+        // isLightsTurn
 
         for( int i = 0; i < possibleMoves.size(); i++ )
         {
             GameModel newGM = new GameModel(gameModel);
             
             int newValue = evaluateMove( newGM, 
-                                          possibleMoves.get(i), 
-                                          2 );
+                                         possibleMoves.get(i), 
+                                         2,
+                                         isLightsTurn );
             
             if( (isLightsTurn && newValue > value) ||
                 (!isLightsTurn && newValue < value) )
@@ -63,7 +69,8 @@ public class AIEngine
         return convertMoveToString( possibleMoves.get(indexOfMoveToMake) );
     }
     
-    private static ArrayList<int[]> getPossibleMoves( GameModel gameModel )
+    private static ArrayList<int[]> getPossibleMoves( GameModel gameModel, 
+                                                      boolean lightToMove )
     {
         boolean isLightsTurn = gameModel.isLightsTurn();
         
@@ -81,16 +88,15 @@ public class AIEngine
                 (!isLightsTurn && GameModel.isDarkPiece(currPiece)) )
             {
                 for( int newPos = 0; newPos < 64; newPos++ )
-                {
-                    // TODO: We could probably improve efficiency here; we 
-                    // shouldn't need to check EVERY other square to see if
-                    // it's a valid mode (ie. for a pawn, we can simply check
-                    // if the move is one or two spaces ahead, then call
-                    // gameModel.isValidMove())
+                {                   
+                    // Order of checks here is probably somewhat important;
+                    // It's better to check the quicker verifiable things first
+                    // to weed out any obviously invalid/poor moves:
                     
                     if( (oldPos != newPos)  &&
-                        gameModel.isValidMove(oldPos,newPos,false) &&
-                        movePassesGeneralOpeningRules(gameModel,oldPos,newPos))
+                        movePassesGeneralOpeningRules(gameModel,oldPos,newPos)
+                        && gameModel.isValidMove(oldPos,newPos,false)
+                        && movePassesGeneralRules(gameModel,oldPos,newPos))
                     {
                         int[] move = new int[3]; // {startPos,endPos,value}
                         move[0] = oldPos;
@@ -103,20 +109,92 @@ public class AIEngine
             }
         }
         
-        // Here we keep only 5 moves at random; so the minimax tree will have
-        // a branching factor of only 5:
-        
-        long mSeed = (new Random()).nextLong();
-        Random randomizer = new Random(mSeed);
-        
-        while( possibleMoves.size() > 5 )
+        // If it's our turn, we have control over which moves to filter out;
+        // otherwise we can't trim off anymore moves; parameter lightToMove
+        // indicates whether it was light's turn when the current iteration 
+        // of minimax started, whereas isLightsTurn indicates whether we are 
+        // at a max (true) or min (false) node of minimax:
+        //
+        if( isLightsTurn == lightToMove )
         {
-            // nextInt(n) generates between 0 (inclusive) and n (exclusive):
-            int indexToRemove = randomizer.nextInt(possibleMoves.size());
-            possibleMoves.remove(indexToRemove);
+            // Here we keep only 5 moves at random; so the minimax tree will 
+            // have a branching factor of only 5:
+            
+            long mSeed = (new Random()).nextLong();
+            Random randomizer = new Random(mSeed);
+            
+            while( possibleMoves.size() > 5 )
+            {
+                // nextInt(n) generates between 0 (inclusive) and n (exclusive):
+                int indexToRemove = randomizer.nextInt(possibleMoves.size());
+                possibleMoves.remove(indexToRemove);
+            }
         }
         
         return possibleMoves;
+    }
+    
+    private static boolean movePassesGeneralRules( 
+        GameModel gameModel, int oldPos, int newPos )
+    {
+        // The main things we want to check here are that a piece is not being 
+        // moved onto a square that is attacked by an opposing piece of lesser 
+        // value (unless it captures a piece of equal or greater value first) 
+        // and that we are not moving onto a square that is attacked by
+        // opposing pieces more times than it is defended.
+        
+        // Note: A bishop is considered slightly more valuable than a knight,
+        // but for these purposes, it should be considered the same.
+        
+        // Also note: we don't need to check anything checked by move
+        // validation here (ie. if for example we tried to move an empty 
+        // square), since that will all be checked after using isValidMove()
+        
+        // If move captures a piece of equal or greater value, none of the 
+        // rules below applies:
+        
+        int valueOfMovingPiece = 
+            getValueOfPiece( gameModel.getPieceAtSquare(oldPos) );
+        int capturedValue = 
+            getValueOfPiece( gameModel.getPieceAtSquare(newPos) );
+        
+        // +25 allows for bishop to capture knight:
+        
+        if( valueOfMovingPiece <= capturedValue + 25 )
+            return true;
+        
+        GameModel newGM = new GameModel(gameModel);
+        
+        newGM.updateAfterMove( oldPos, newPos );
+        
+        // Here we are checking if after the move the moved piece can be 
+        // immediately captured by an opposing piece of lesser value:
+        
+        for( int pos = 0; pos < 64; pos++ )
+        {
+            pc movedPiece = newGM.getPieceAtSquare(newPos);
+            pc pieceAtCurrPos = newGM.getPieceAtSquare(pos);
+            
+            // If pieces are opposing and current piece can validly move onto
+            // moved piece:
+            //
+            if( ( pieceAtCurrPos != pc.eS ) &&
+                (GameModel.isLightPiece(pieceAtCurrPos) != 
+                GameModel.isLightPiece(movedPiece)) &&
+                newGM.isValidMove(pos,newPos,false) )
+            {
+                int currPieceValue = 
+                    getValueOfPiece( gameModel.getPieceAtSquare(pos) );
+                
+                if( currPieceValue < valueOfMovingPiece - 25 )
+                    return false;
+            }
+        }
+        
+        // TODO: Check we are not moving onto a square that is attacked by
+        // opposing pieces more times than it is defended.
+        
+        return true;
     }
     
     private static boolean movePassesGeneralOpeningRules( 
@@ -242,7 +320,8 @@ public class AIEngine
     
     private static int evaluateMove( GameModel gameModel,
                                      int[] theMove,
-                                     int depth )
+                                     int depth,
+                                     boolean lightToMove )
     {
         // Assumption: we only ever care to evaluate a move if it is our turn
         // (so we will never perform an evaulation for white when it is black's
@@ -273,13 +352,15 @@ public class AIEngine
             else
                 value = Integer.MAX_VALUE;
             
-            ArrayList<int[]> possibleMoves = getPossibleMoves( newGM );
+            ArrayList<int[]> possibleMoves = getPossibleMoves( newGM, 
+                                                               lightToMove );
             
             for( int i = 0; i < possibleMoves.size(); i++ )
             {
                 int newValue = evaluateMove( newGM, 
                                              possibleMoves.get(i), 
-                                             depth-1 );
+                                             depth-1,
+                                             lightToMove );
                 
                 if( (isLightsTurn && newValue > value) ||
                     (!isLightsTurn && newValue < value) )
@@ -345,6 +426,10 @@ public class AIEngine
             darksScore += 125;
         else {}
             // Do nothing
+        
+        // TODO: Factor in piece development; light should be penalized for
+        // being behind in development by one move, and black should
+        // be penalized for being behind in development by two moves.
 
         return lightsScore - darksScore;
     }
@@ -353,8 +438,8 @@ public class AIEngine
     {
         int lightsMaterial = 0;
         
-        // TODO: add an infinit value for the king and incorporate that into 
-        // the minimax search (so that any checkmate will result in a capture
+        // TODO: add an infinite value for the king and incorporate that into 
+        // the minimax search (so that any check mate will result in a capture
         // of the king and result in infinite value for the opposing side).
         // For now we assume that game remains in opening stages and a 
         // check mate is not possible.
@@ -363,36 +448,8 @@ public class AIEngine
         {
             for( int j = 0; j < board_rep[0].length; j++ )
             {
-                switch( board_rep[i][j] )
-                {
-                case lP:
-                    lightsMaterial += 100;
-                    break;
-                case lN:
-                    lightsMaterial += 300;
-                    break;
-                case lB:
-                    lightsMaterial += 325;
-                    break;
-                case lR:
-                    lightsMaterial += 500;
-                    break;
-                case lQ:
-                    lightsMaterial += 900;
-                    break;
-                case lK:
-                case dP:
-                case dN:
-                case dB:
-                case dR:
-                case dQ:
-                case dK:
-                case eS:
-                    // Do nothing
-                    break;
-                default:
-                    throw new AssertionError("Invalid piece");
-                }
+                if( GameModel.isLightPiece(board_rep[i][j]) )
+                    lightsMaterial += getValueOfPiece( board_rep[i][j] );
             }
         }
         
@@ -403,8 +460,8 @@ public class AIEngine
     {
         int darksMaterial = 0;
         
-        // TODO: add an infinit value for the king and incorporate that into 
-        // the minimax search (so that any checkmate will result in a capture
+        // TODO: add an infinite value for the king and incorporate that into 
+        // the minimax search (so that any check mate will result in a capture
         // of the king and result in infinite value for the opposing side).
         // For now we assume that game remains in opening stages and a 
         // check mate is not possible.
@@ -413,40 +470,50 @@ public class AIEngine
         {
             for( int j = 0; j < board_rep[0].length; j++ )
             {
-                switch( board_rep[i][j] )
-                {
-                case eS:
-                case lP:
-                case lN:
-                case lB:
-                case lR:
-                case lQ:
-                case lK:
-                case dK:
-                    // Do nothing
-                    break;
-                case dP:
-                    darksMaterial += 100;
-                    break;
-                case dN:
-                    darksMaterial += 300;
-                    break;
-                case dB:
-                    darksMaterial += 325;
-                    break;
-                case dR:
-                    darksMaterial += 500;
-                    break;
-                case dQ:
-                    darksMaterial += 900;
-                    break;
-                default:
-                    throw new AssertionError("Invalid piece");
-                }
+                if( GameModel.isDarkPiece(board_rep[i][j]) )
+                    darksMaterial += getValueOfPiece( board_rep[i][j] );
             }
         }
         
         return darksMaterial;
+    }
+    
+    private static int getValueOfPiece( pc thePiece )
+    {
+        int value = 0;
+        
+        switch( thePiece )
+        {
+        case eS:
+        case lK:
+        case dK:
+            // Do nothing - leave value at zero
+            break;
+        case lP:
+        case dP:
+            value = 100;
+            break;
+        case lN:
+        case dN:
+            value = 300;
+            break;
+        case lB:
+        case dB:
+            value = 325;
+            break;
+        case lR:
+        case dR:
+            value = 500;
+            break;
+        case lQ:
+        case dQ:
+            value = 900;
+            break;
+        default:
+            throw new AssertionError("Invalid piece");
+        }
+        
+        return value;
     }
     
     private static String convertMoveToString( int[] theMove )
@@ -460,124 +527,4 @@ public class AIEngine
         
         return moveAsString;
     }
-    
-/*
-    private static String convertNumberToCharacter( int num )
-    {
-        // This is a simple function that converts from a column number to a 
-        // column letter (for output).
-        
-        String theChar = "";
-        
-        switch( num )
-        {
-        case 0:
-            theChar = "a";
-            break;
-        case 1:
-            theChar = "b";
-            break;
-        case 2:
-            theChar = "c";
-            break;
-        case 3:
-            theChar = "d";
-            break;
-        case 4:
-            theChar = "e";
-            break;
-        case 5:
-            theChar = "f";
-            break;
-        case 6:
-            theChar = "g";
-            break;
-        case 7:
-            theChar = "h";
-            break;
-        default:
-            throw new AssertionError("Invalid column number");
-        }
-        
-        return theChar;
-    }
-
-    private static pc[][] getNewBoardAfterMove( GameModel gameModel,
-                                                  int[] theMove )
-    {
-        pc movingPiece = board_rep[theMove[0]][theMove[1]];
-            
-        pc[][] new_board_rep = board_rep;
-            
-        new_board_rep[theMove[0]][theMove[1]] = pc.eS;
-        new_board_rep[theMove[2]][theMove[3]] = movingPiece;
-        
-        return new_board_rep;
-    }
-    
-    private static int[] evaluateMoves( GameModel gameModel,
-                                        ArrayList<int[]> moves )
-    {
-        ////boolean isLightsTurn = gameModel.isLightsTurn();
-        pc[][] board_rep = gameModel.getBoardRep();
-        
-        // This function should take in a list of moves, evaluate all of them, 
-        // and return the best one, according to the evaluation function.
-        // This is the "imperfect information" step.
-        
-        // TODO: Run evaluations instead of simply always returning the first 
-        // move:
-        // Consider using evaluatePosition() function below
-        return moves.get(0);
-    }
-    
-    private static ArrayList<int[]> trimPossibleMoves( 
-        GameModel gameModel,
-        ArrayList<int[]> possibleMoves )
-    {
-        // This function should take in a list of possible moves and trim 
-        // away some of the obviously bad moves (as well as some of the less 
-        // obviously bad ones) and return a new list of potential moves that 
-        // is as small as possible.
-        
-        boolean isLightsTurn = gameModel.isLightsTurn();
-        pc[][] board_rep = gameModel.getBoardRep();
-
-        // Use evaluatePosition() function and keep top 10 moves:
-    
-        //int initCapacity = 10;
-        //PriorityQueue<int[]> thePQ = 
-        //    new PriorityQueue<int[]>( initCapacity, 
-        //                              new Comparator<int[]>() {
-        //        public int compare(int[] n1, int[] n2) 
-        //        {
-        //            if( n1[4] < n2[4] )
-        //                return -1;
-        //            else if( n1[4] > n2[4] )
-        //                return 1;
-        //            else
-        //                return 0;
-        //        }
-        //});
-
-        for( int i = 0; i < possibleMoves.size(); i++ )
-        {
-            int[] currMove = possibleMoves.get(i);
-            
-            pc movingPiece = board_rep[currMove[0]][currMove[1]];
-            
-            pc[][] new_board_rep = board_rep;
-            
-            new_board_rep[currMove[0]][currMove[1]] = pc.eS;
-            new_board_rep[currMove[2]][currMove[3]] = movingPiece;
-            
-            //int currValue = evaluatePosition( new_board_rep, isLightsTurn );
-            
-            //thePQ.
-        }
-
-        possibleMoves.remove(0);
-        return possibleMoves;
-    }
-*/
 }

@@ -30,6 +30,11 @@ public class AIEngine
     // Main public interface to the AIEngine class:
     public static String getNextMove( GameModel gameModel )
     {
+        return convertMoveToString( getNextMoveAsPositions( gameModel ) );
+    }
+    
+    public static int[] getNextMoveAsPositions( GameModel gameModel )
+    {
         boolean isLightsTurn = gameModel.isLightsTurn();
         
         ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel, isLightsTurn );
@@ -55,7 +60,7 @@ public class AIEngine
             
             int newValue = evaluateMove( newGM, 
                                          possibleMoves.get(i), 
-                                         2,
+                                         4,
                                          isLightsTurn );
             
             if( (isLightsTurn && newValue > value) ||
@@ -66,7 +71,7 @@ public class AIEngine
             }
         }
         
-        return convertMoveToString( possibleMoves.get(indexOfMoveToMake) );
+        return possibleMoves.get(indexOfMoveToMake);
     }
     
     private static ArrayList<int[]> getPossibleMoves( GameModel gameModel, 

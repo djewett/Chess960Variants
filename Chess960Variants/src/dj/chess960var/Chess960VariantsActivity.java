@@ -415,6 +415,7 @@ public class Chess960VariantsActivity extends Activity
 			getBoardImageAdapter().setLightAI2(false);
 			
 			lightAI1ToggleButton.setImageResource(R.drawable.light_ai1_enabled);
+			
 			getBoardImageAdapter().setLightAI1(true);
 			
 			// Run AI to generate a move if toggle is switched on:
@@ -486,6 +487,7 @@ public class Chess960VariantsActivity extends Activity
 			getBoardImageAdapter().setDarkAI2(false);
 			
 			darkAI1ToggleButton.setImageResource(R.drawable.dark_ai1_enabled);
+			
 			getBoardImageAdapter().setDarkAI1(true);
 			
 			// Run AI to generate a move if toggle is switched on:
@@ -495,7 +497,7 @@ public class Chess960VariantsActivity extends Activity
     	
     		//TextView darkAITextOutputBox = 
     		//	(TextView) findViewById(R.id.darkAITextView);
-            		
+			
             runAI( getBoardImageAdapter() );
 		}
 	}

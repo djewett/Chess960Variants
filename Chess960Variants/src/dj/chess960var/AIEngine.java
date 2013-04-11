@@ -33,6 +33,7 @@ public class AIEngine
         return convertMoveToString( getNextMoveAsPositions( gameModel ) );
     }
     
+    // Main public interface to the AIEngine class:
     public static int[] getNextMoveAsPositions( GameModel gameModel )
     {
         boolean isLightsTurn = gameModel.isLightsTurn();
@@ -41,7 +42,7 @@ public class AIEngine
         
         // TODO: Factor this code with similar code in evaluateMove():
 
-        int value;
+        int value; // alpha-beta value
         
         if( isLightsTurn )
             value = Integer.MIN_VALUE;
@@ -58,10 +59,13 @@ public class AIEngine
         {
             GameModel newGM = new GameModel(gameModel);
             
+            int startingDepth = 3;
+            
             int newValue = evaluateMove( newGM, 
                                          possibleMoves.get(i), 
-                                         4,
-                                         isLightsTurn );
+                                         startingDepth,
+                                         isLightsTurn,
+                                         value );
             
             if( (isLightsTurn && newValue > value) ||
                 (!isLightsTurn && newValue < value) )
@@ -72,6 +76,85 @@ public class AIEngine
         }
         
         return possibleMoves.get(indexOfMoveToMake);
+    }
+    
+    private static int getDevelopment( GameModel gameModel, boolean forLight )
+    {
+        // This method estimates and returns a measure of how "developed" a 
+        // player is (ie. how many pieces that player has moved from their
+        // original squares). Development is a key measure of good position
+        // (probably second only to material, in the opening). Pieces should
+        // typically NOT be moved twice during the opening, and so development
+        // can help ensure this is the case.
+        
+        // This might count castling as two pieces developing (since it will
+        // increment once for king and once for rook), but that is probably a 
+        // decent approximation of castling anyway.
+        
+        int development = 0;
+        
+        if( forLight )
+        {
+            // Return measure of how developed white side is:
+            
+            //  lP lP lP lP lP lP lP lP  =  48 49 50 51 52 53 54 55
+            //  lR lN lB lQ lK lB lN lR  =  56 57 58 59 60 61 62 63
+            
+            // Pawns:
+            for( int i = 48; i <= 55; i++ )
+                if( pc.lP != gameModel.getPieceAtSquare(i) )
+                    development++;
+            
+            // Back row pieces:
+            if( pc.lR != gameModel.getPieceAtSquare(56) )
+                development++;
+            if( pc.lR != gameModel.getPieceAtSquare(63) )
+                development++;
+            if( pc.lN != gameModel.getPieceAtSquare(57) )
+                development++;
+            if( pc.lN != gameModel.getPieceAtSquare(62) )
+                development++;
+            if( pc.lB != gameModel.getPieceAtSquare(58) )
+                development++;
+            if( pc.lB != gameModel.getPieceAtSquare(61) )
+                development++;
+            if( pc.lQ != gameModel.getPieceAtSquare(59) )
+                development++;
+            if( pc.lK != gameModel.getPieceAtSquare(60) )
+                development++;
+        }
+        else
+        {
+            // Return measure of how developed black side is:
+            
+            //  dR dN dB dQ dK dB dN dR  =  0  1  2  3  4  5  6  7
+            //  dP dP dP dP dP dP dP dP  =  8  9  10 11 12 13 14 15
+            
+            // Pawns:
+            for( int i = 8; i <= 15; i++ )
+                if( pc.dP != gameModel.getPieceAtSquare(i) )
+                    development++;
+            
+            // Back row pieces:
+            if( pc.dR != gameModel.getPieceAtSquare(0) )
+                development++;
+            if( pc.dR != gameModel.getPieceAtSquare(7) )
+                development++;
+            if( pc.dN != gameModel.getPieceAtSquare(1) )
+                development++;
+            if( pc.dN != gameModel.getPieceAtSquare(6) )
+                development++;
+            if( pc.dB != gameModel.getPieceAtSquare(2) )
+                development++;
+            if( pc.dB != gameModel.getPieceAtSquare(5) )
+                development++;
+            if( pc.dQ != gameModel.getPieceAtSquare(3) )
+                development++;
+            if( pc.dK != gameModel.getPieceAtSquare(4) )
+                development++;
+        }
+        
+        return development;
     }
     
     private static ArrayList<int[]> getPossibleMoves( GameModel gameModel, 
@@ -98,8 +181,24 @@ public class AIEngine
                     // It's better to check the quicker verifiable things first
                     // to weed out any obviously invalid/poor moves:
                     
-                    if( (oldPos != newPos)  &&
-                        movePassesGeneralOpeningRules(gameModel,oldPos,newPos)
+                    boolean openingRulesPassed = true;
+                    int lightsDevelopmentScore = 
+                        getDevelopment( gameModel, true );
+                    int darksDevelopmentScore = 
+                        getDevelopment( gameModel, false );
+                    boolean isGameInOpening = 
+                        isOpening( lightsDevelopmentScore, 
+                                   darksDevelopmentScore );
+                    // Only check opening moves if we are in the opening:
+                    if( isGameInOpening )
+                    {
+                        openingRulesPassed = 
+                            movePassesGeneralOpeningRules( gameModel,
+                                                           oldPos,
+                                                           newPos );
+                    }
+                    
+                    if( (oldPos != newPos)  && openingRulesPassed
                         && gameModel.isValidMove(oldPos,newPos,false)
                         && movePassesGeneralRules(gameModel,oldPos,newPos))
                     {
@@ -326,11 +425,18 @@ public class AIEngine
     private static int evaluateMove( GameModel gameModel,
                                      int[] theMove,
                                      int depth,
-                                     boolean lightToMove )
+                                     boolean lightToMove,
+                                     int ab_value )
     {
         // Assumption: we only ever care to evaluate a move if it is our turn
         // (so we will never perform an evaulation for white when it is black's
         // turn and vice-versa).
+        
+        // Note: White, if playing optimally, should always be ahead of or
+        // equal to black in development, since white moves first. As such,
+        // Black's leaf node evaluations will typically not be equal and
+        // opposite to white's, but that is OK.  We simply try to minimize
+        // it for Black.
         
         // For now, just do minimax without alpa-beta pruning
         // TODO: Add alpha-beta pruning
@@ -365,11 +471,16 @@ public class AIEngine
                 int newValue = evaluateMove( newGM, 
                                              possibleMoves.get(i), 
                                              depth-1,
-                                             lightToMove );
+                                             lightToMove,
+                                             value );
                 
                 if( (isLightsTurn && newValue > value) ||
                     (!isLightsTurn && newValue < value) )
                         value = newValue;
+                
+                if( (isLightsTurn && newValue >= ab_value) ||
+                    (!isLightsTurn && newValue <= ab_value) )
+                        break; // <- Pruning step of alpha-beta pruning
             }
         }
         
@@ -416,8 +527,8 @@ public class AIEngine
         int numberOfLightsInCenter = 0;
         int numberOfDarksInCenter = 0;
         
-        for( int i = 2; i < 5; i++ ) // rows 3 to 6
-            for( int j = 2; j < 5; j++ ) // columns c to f
+        for( int i = 2; i <= 5; i++ ) // rows 3 to 6
+            for( int j = 2; j <= 5; j++ ) // columns c to f
                 if( GameModel.isLightPiece(board_rep[i][j]) )
                     numberOfLightsInCenter++;
                 else if( GameModel.isDarkPiece(board_rep[i][j]) )
@@ -435,8 +546,33 @@ public class AIEngine
         // TODO: Factor in piece development; light should be penalized for
         // being behind in development by one move, and black should
         // be penalized for being behind in development by two moves.
+        
+        int lightsDevelopmentScore = getDevelopment( gameModel, true );
+        int darksDevelopmentScore = getDevelopment( gameModel, false );
+        
+        boolean isGameInOpening = isOpening( lightsDevelopmentScore, 
+                                             darksDevelopmentScore );
+        
+        // Rapid development is mainly important in the opening:
+        if( isGameInOpening)
+        {
+            // Only need to do this for light because it is all relative:
+            lightsScore += 
+                (lightsDevelopmentScore - darksDevelopmentScore)*125;
+        }
 
         return lightsScore - darksScore;
+    }
+    
+    private static boolean isOpening( int lightDevelopment, 
+                                      int darkDevelopment )
+    {
+        // This method estimates whether the game is in opening stages,
+        // based on how developed to two sides are:
+        
+        boolean isOp = Math.max(lightDevelopment,darkDevelopment) <= 8;
+        
+        return isOp;
     }
     
     private static int getLightsMaterial( pc[][] board_rep )

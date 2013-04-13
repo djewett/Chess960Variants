@@ -39,8 +39,6 @@ public class AIEngine
         boolean isLightsTurn = gameModel.isLightsTurn();
         
         ArrayList<int[]> possibleMoves = getPossibleMoves( gameModel, isLightsTurn );
-        
-        // TODO: Factor this code with similar code in evaluateMove():
 
         int value; // alpha-beta value
         
@@ -162,7 +160,8 @@ public class AIEngine
     {
         boolean isLightsTurn = gameModel.isLightsTurn();
         
-        ArrayList<int[]> possibleMoves = new ArrayList<int[]>(); 
+        ArrayList<int[]> possibleMoves = new ArrayList<int[]>();
+        ArrayList<int[]> captureMoves = new ArrayList<int[]>(); 
         
         for( int oldPos = 0; oldPos < 64; oldPos++ )
         {
@@ -206,8 +205,15 @@ public class AIEngine
                         move[0] = oldPos;
                         move[1] = newPos;
                         move[2] = -17; // For now, obscure value for testing
-                                
-                        possibleMoves.add(move);
+                        
+                        if( isCaptureMove(gameModel,oldPos,newPos) )
+                        {
+                        	captureMoves.add(move);
+                        }
+                        else
+                        {
+                        	possibleMoves.add(move);
+                        }
                     }
                 }
             }
@@ -222,7 +228,7 @@ public class AIEngine
         if( isLightsTurn == lightToMove )
         {
             // Here we keep only 5 moves at random; so the minimax tree will 
-            // have a branching factor of only 5:
+            // have a branching factor of only 5 at the current depth:
             
             long mSeed = (new Random()).nextLong();
             Random randomizer = new Random(mSeed);
@@ -235,7 +241,28 @@ public class AIEngine
             }
         }
         
+        // Good idea to always consider capture moves:
+        possibleMoves.addAll(captureMoves);
+        
         return possibleMoves;
+    }
+    
+    private static boolean isCaptureMove( 
+    	GameModel gameModel, int oldPos, int newPos )
+    {
+    	pc capturedSquare = gameModel.getPieceAtSquare(newPos);
+    	
+    	// TODO: Fix this function so that it doesn't include castling:
+    	// For now, all we are doing is checking that the square landed on
+    	// is not empty (so this will include castling, which is technically
+    	// not exactly right)
+    	
+    	boolean isCapture = false;
+    	
+    	if( pc.eS != capturedSquare )
+    		isCapture = true;
+    	
+    	return isCapture;
     }
     
     private static boolean movePassesGeneralRules( 
@@ -304,9 +331,9 @@ public class AIEngine
     private static boolean movePassesGeneralOpeningRules( 
         GameModel gameModel, int oldPos, int newPos )
     {
-        boolean passesGeneralOpeningRules = false;
+        boolean passesGeneralOpeningRules = true;
         
-        pc capturedPiece = gameModel.getPieceAtSquare(newPos); // Can be eS
+        pc capturedSquare = gameModel.getPieceAtSquare(newPos); // Can be eS
         
         // Here we enforce some basic rules that, during an opening, should 
         // hold for all moves other than a piece capture:
@@ -324,7 +351,7 @@ public class AIEngine
         // - Moving knight to edge of board
         // - Moving rooks (other than castling or sometimes to open files)
         
-        if( pc.eS == capturedPiece )
+        if( pc.eS == capturedSquare )
         {
             // No piece is captured, so the above list of rules applies:
             
@@ -346,6 +373,7 @@ public class AIEngine
                             passesGeneralOpeningRules = true;
                             break;
                         default:
+                        	passesGeneralOpeningRules = false;
                             break;
                     }
                     break;
@@ -360,6 +388,7 @@ public class AIEngine
                             passesGeneralOpeningRules = true;
                             break;
                         default:
+                        	passesGeneralOpeningRules = false;
                             break;
                     }
                     break;
@@ -369,8 +398,8 @@ public class AIEngine
                     break;
                     
                 case lK:
-                    if( pc.lR == capturedPiece ) // Castling
-                        passesGeneralOpeningRules = true;
+                    if( pc.lR != capturedSquare ) // non-Castling
+                        passesGeneralOpeningRules = false;
                     break;
                     
                 case dP:
@@ -387,6 +416,7 @@ public class AIEngine
                             passesGeneralOpeningRules = true;
                             break;
                         default:
+                        	passesGeneralOpeningRules = false;
                             break;
                     }
                     break;
@@ -401,6 +431,7 @@ public class AIEngine
                             passesGeneralOpeningRules = true;
                             break;
                         default:
+                        	passesGeneralOpeningRules = false;
                             break;
                     }
                     break;
@@ -410,8 +441,8 @@ public class AIEngine
                     break;
                     
                 case dK:
-                    if( pc.dR == capturedPiece ) // Castling
-                        passesGeneralOpeningRules = true;
+                    if( pc.dR != capturedSquare ) // non-Castling
+                        passesGeneralOpeningRules = false;
                     break;
                     
                 default:
@@ -429,7 +460,7 @@ public class AIEngine
                                      int ab_value )
     {
         // Assumption: we only ever care to evaluate a move if it is our turn
-        // (so we will never perform an evaulation for white when it is black's
+        // (so we will never perform an evaluation for white when it is black's
         // turn and vice-versa).
         
         // Note: White, if playing optimally, should always be ahead of or
@@ -437,9 +468,6 @@ public class AIEngine
         // Black's leaf node evaluations will typically not be equal and
         // opposite to white's, but that is OK.  We simply try to minimize
         // it for Black.
-        
-        // For now, just do minimax without alpa-beta pruning
-        // TODO: Add alpha-beta pruning
         
         GameModel newGM = new GameModel(gameModel);
         
@@ -505,6 +533,9 @@ public class AIEngine
         // 
         //  (2) some measure of how many squares in the center are occupied/
         // attacked
+        //
+        //  (3) development of pieces (how many starting squares are no
+        // longer occupied by their original pieces)
         
         int lightsScore = getLightsMaterial(board_rep);
         int darksScore = getDarksMaterial(board_rep);
@@ -543,9 +574,9 @@ public class AIEngine
         else {}
             // Do nothing
         
-        // TODO: Factor in piece development; light should be penalized for
+        // Factor in piece development; light should be penalized for
         // being behind in development by one move, and black should
-        // be penalized for being behind in development by two moves.
+        // be penalized for being behind in development by two moves:
         
         int lightsDevelopmentScore = getDevelopment( gameModel, true );
         int darksDevelopmentScore = getDevelopment( gameModel, false );
@@ -554,7 +585,7 @@ public class AIEngine
                                              darksDevelopmentScore );
         
         // Rapid development is mainly important in the opening:
-        if( isGameInOpening)
+        if( isGameInOpening )
         {
             // Only need to do this for light because it is all relative:
             lightsScore += 
@@ -570,7 +601,7 @@ public class AIEngine
         // This method estimates whether the game is in opening stages,
         // based on how developed to two sides are:
         
-        boolean isOp = Math.max(lightDevelopment,darkDevelopment) <= 8;
+        boolean isOp = Math.max(lightDevelopment,darkDevelopment) <= 6;
         
         return isOp;
     }
